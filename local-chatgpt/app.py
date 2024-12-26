@@ -39,7 +39,7 @@ async def tool(input_message, image=None):
                            messages=interaction) 
     
     interaction.append({"role": "assistant",
-                        "content": response.message.content})
+                        "content": response["message"]["content"]})
     
     return response
 
@@ -57,7 +57,7 @@ async def main(message: cl.Message):
 
     msg = cl.Message(content="")
 
-    for token in tool_res.message.content:
+    for token in tool_res["message"]["content"]:
         await msg.stream_token(token)
 
     await msg.send()
