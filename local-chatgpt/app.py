@@ -106,5 +106,3 @@ async def show_history():
     interaction = cl.user_session.get("interaction")
     history_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in interaction])
     await cl.Message(content=f"Here's the chat history:\n{history_text}").send()
-
-#C:\Users\Smily\AppData\Local\Programs\ollama\ollama pull llama3.2-vision : to pull the llama model 
