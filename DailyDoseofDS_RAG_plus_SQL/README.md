@@ -9,7 +9,8 @@ This project builds a hybrid RAG and SQL query application for US cities informa
 
 A demo is shown below:
 
-[Demo Screenshot]
+![demo_screenshot](https://github.com/user-attachments/assets/ae348c81-8c32-480c-87ef-79c6fcc2d75c)
+
 
 ## Installation and setup
 
