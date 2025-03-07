@@ -41,6 +41,7 @@ Below is an holistic user->company journey in dealing with claims:
 * **OpenAI GPT-4o**: Provides advanced natural language understanding and structured output to assess claims and generate recommendations.
 * **Streamlit**: Builds an interactive user interface for claim input and real-time workflow monitoring.
 * **uv**: Manages the virtual environment and dependencies, ensuring reproducible builds.
+* **Vercel**: Used Vercel to build and host a mock auto insurance company portal for customers and claims adjusters to evaluate users claims
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
