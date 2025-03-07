@@ -15,7 +15,7 @@ A demo is shown below:
 
 Below is an overview of the project architecture:
 
-![Architecture Diagram](https://github.com/yourusername/ClaimSonic/raw/main/flow_diagrams/ClaimSonic_whole_arch.png "Project Architecture")
+![Architecture Diagram](Vamshi_ClaimSonic_Auto_Insurance_Claims_Agent/flow_diagrams/ClaimSonic_whole_arch.png "Project Architecture")
 
 
 ---
