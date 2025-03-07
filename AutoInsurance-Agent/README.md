@@ -58,21 +58,20 @@ organization_id="...",
 api_key="..."
 ```
 
-3. Configure the token to access to LlamaCloud. You can use a environment variable as suggested in the code
+3. Configure the token to access LlamaCloud. You can use a environment variable as suggested in the code
 
 ```python
 base_url="...",
 token=os.environ["LLAMA_CLOUD_API_KEY"],
 ```
 
-4. Finally, you will need a API for OpenAI. Setting it up as a environment variable.
+4. Finally, you will need an API for OpenAI. Setting it up as a environment variable.
 
 ```python
 api_key=os.environ["OPEN_API_KEY"]
 ```
 
-That's all! You are ready to go. Take into account that you can always find Open Source options or other third parties providers. You can use them. Just set the indexes
-and keys, and check any additional requirement you eventually need to set this up.
+That's all! You are ready to go. Keep in mind that you can also use open source options or other third-party providers. Simply configure the indexes and keys, and adjust any additional requirements as needed
 
 To run the project, in the console, run the next command
 
@@ -80,7 +79,7 @@ To run the project, in the console, run the next command
 python -m streamlit run insuranceApp.py
 ```
 
-### Pachage Claim
+### Package Claim
 
 The package contains two classes documents and insurance:
 
@@ -127,5 +126,4 @@ I appreciate all contributions, whether big or small. Every improvement helps ma
 
 ## Links
 
-This project was developed thanks to the reccomendations of [Daily Doses of DS](https://www.dailydoseofds.com/) . Please check the amazing
-tutorials and material they post every week. 
+This project was developed thanks to the recommendations of [Daily Doses of DS](https://www.dailydoseofds.com/). Please check out the excellent tutorials and materials they post each week.
