@@ -15,7 +15,11 @@ A demo is shown below:
 
 Below is an overview of the project architecture:
 
-![Architecture Diagram](Vamshi_ClaimSonic_Auto_Insurance_Claims_Agent/flow_diagrams/ClaimSonic_whole_arch.png "Project Architecture")
+![Architecture Diagram](https://raw.githubusercontent.com/vamshi694/ai-engineering-hub/main/Vamshi_ClaimSonic_Auto_Insurance_Claims_Agent/flow_diagrams/ClaimSonic_whole_arch.png "Project Architecture")
+
+Below is an holistic user->company journey in dealing with claims:
+
+![Architecture Diagram](https://raw.githubusercontent.com/vamshi694/ai-engineering-hub/main/Vamshi_ClaimSonic_Auto_Insurance_Claims_Agent/flow_diagrams/claims_whole_flow.png "Project Architecture")
 
 
 ---
