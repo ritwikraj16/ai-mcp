@@ -1,0 +1,3 @@
+ipykernel
+llama-index
+llama-index-utils-workflow

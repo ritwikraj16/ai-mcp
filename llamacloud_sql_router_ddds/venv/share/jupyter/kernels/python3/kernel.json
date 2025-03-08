@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "/Users/hadenpelletier/Downloads/Resumes/dailydoseds/ai-engineering-hub/llamacloud_sql_router_ddds/venv/bin/python",
+  "-m",
+  "ipykernel_launcher",
+  "-f",
+  "{connection_file}"
+ ],
+ "display_name": "Python 3 (ipykernel)",
+ "language": "python",
+ "metadata": {
+  "debugger": true
+ }
+}
