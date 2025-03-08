@@ -7,7 +7,7 @@ ClaimSonic is an intelligent auto insurance claim processing application designe
 
 A demo is shown below:
 
-[Video demo](https://youtu.be/8Pqo3F23IQU)
+[Video demo](https://youtu.be/oKSzV4b5e1g)
 
 --- 
 
