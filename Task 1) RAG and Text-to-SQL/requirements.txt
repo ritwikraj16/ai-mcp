@@ -1,0 +1,7 @@
+streamlit
+python-dotenv
+nest-asyncio
+llama_index
+sqlalchemy
+openai
+asyncio
