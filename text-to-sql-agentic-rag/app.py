@@ -11,10 +11,10 @@ from agent_setup import (
 nest_asyncio.apply()
 
 # Initialize the database only once
-global engine
-if 'db_initialized' not in st.session_state:
+@st.cache_resource
+def create_workflow():
+    print("Creating workflow")
     engine = setup_db()
-    st.session_state['engine'] = engine
     tools = setup_agent_tools(engine)
 
     # Create the router agent workflow
@@ -23,10 +23,10 @@ if 'db_initialized' not in st.session_state:
         verbose=True,
         timeout=120
     )
-    st.session_state['workflow'] = workflow
-    st.session_state['db_initialized'] = True
-else:
-    engine = st.session_state['engine']
+
+    return workflow
+
+st.session_state['workflow'] = create_workflow() 
 
 # Initialize session state for storing chat history
 if 'messages' not in st.session_state:
