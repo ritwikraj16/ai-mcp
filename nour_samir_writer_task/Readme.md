@@ -31,7 +31,7 @@ https://typefully.com/t/K2oyWAT
 Ensure you have Python 3.11+ installed, then run:  
 
 ```bash
-pip install streamlit sqlalchemy llama-index llama-index-core
+pip install streamlit sqlalchemy llama-index llama-index-core openai
 ```
 ---
 ### 2- Set Up the Database  
