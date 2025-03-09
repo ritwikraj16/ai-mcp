@@ -82,6 +82,7 @@ streamlit run app.py
 ```
 
 6. Jupyter Notebook
+
 Go through `llamacloud_sql_router.ipynb` for Jupyter Notebook version (this does not include streamlit UI)
 
 ## 💡 Usage
