@@ -16,11 +16,13 @@ Suppose you call the main folder of your project `insurance_claim/`. At the end 
 ```plaintext
 insurance_claim/
     ├── app.py
+    ├── data/
     └── venv/
 ```
 
 Where:
 - `app.py` is the Python file containing all the logic.
+- `data/` contains the input and output data.
 - `venv/` contains the virtual environment.
 
 You can create the venv/ virtual environment directory like so:
@@ -41,3 +43,5 @@ You can now install dependencies:
 ```plaintext
 pip install -r requirements.txt
 ```
+
+Finally, the PDF file used for this tutorial can be dowloaded [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf) and must be uploaded [here](https://cloud.llamaindex.ai/login) to be parsed by the LLM.
