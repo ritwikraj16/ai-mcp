@@ -94,7 +94,6 @@ def parse_claim_from_text(json_text: str) -> ClaimInfo:
     return ClaimInfo(**data)
 
 # Utility: Reads the prompts from the markdown files
-
 def load_prompt(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
         return f.read()
@@ -195,7 +194,6 @@ class LogEvent(Event):
 
 
 # Build the Auto Insurance Workflow
-
 class AutoInsuranceWorkflow(Workflow):
     """
         Auto Insurance Claim Workflow.
