@@ -8,7 +8,7 @@
 
 ### Requirements
 To replicate this tutorial must match the following requirements:
-- Python [x] or higher installed on your machine.
+- Python 3.10.1 higher installed on your machine.
 - A valid llamaindex API key that can be retrieved [here](https://cloud.llamaindex.ai/).
 - A valid OpenAI API key that can be retrieved [here](https://platform.openai.com/api-keys).
 
@@ -54,9 +54,9 @@ pip install -r requirements.txt
 
 ### Project set up: cloudllama
 In cloudllama, do the following:
-- When you logged in into cloud.llama, the `LLAMA_ORG_ID` can be found in **Settings** > **Organization** > **Organization ID**. In othwe words, set `LLAMA_ORG_ID = <the value of Organization ID>`.
-- Still in **Settings**, give a name to **Project Name** under the **Projects** table. This must be the same value as the variable `project_name`of the `LlamaCloudIndex()` method.
-- The project assumes the possiblity of parsing a PDF file that can be downloaded from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf). However, you can skip this passage and copy and paste the `.json` and `.md` files you find in the `data/` folder as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. To the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
+- When you logged in into cloud.llama, the `LLAMA_ORG_ID` can be found in **Settings** > **Organization** > **Organization ID**. In other words, set `LLAMA_ORG_ID = <the value of Organization ID>`.
+- Still in **Settings**, give a name to **Project Name** under the **Projects** table. This must be the same value as the variable `project_name` of the `LlamaCloudIndex()` method.
+- The project assumes the possiblity of parsing a PDF file that can be downloaded from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf). However, you can skip this passage and copy and paste the `.json` and `.md` files you find in the `data/` folder as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. Do the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
 
 ## Run the application
 To run the application, type:
