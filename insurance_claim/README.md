@@ -30,7 +30,7 @@ insurance_claim/
 
 Where:
 - `app.py` is the Python file containing all the logic.
-- `data/` contains the input and output data.
+- `data/` contains files to insert into [cloudllama](#project-set-up-cloudllama).
 - `venv/` contains the virtual environment.
 
 You can create the venv/ virtual environment directory like so:
@@ -59,7 +59,7 @@ In cloudllama, do the following:
 - The project assumes the possiblity of parsing a PDF file that can be downloaded from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf). However, you can skip this passage and copy and paste the `.json` and `.md` files you find in the `data/` folder as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. To the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
 
 ## Run the application
-To run the applicatio, type:
+To run the application, type:
 ```plaintext
 streamlit run app.py
 ```
