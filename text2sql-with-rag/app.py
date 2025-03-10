@@ -4,7 +4,8 @@ import re
 import streamlit as st
 from dotenv import load_dotenv
 from llama_index.core import Settings
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.ollama import Ollama
+from llama_index.embeddings.ollama import OllamaEmbedding
 from utils.sql_engine import SQLQueryEngine
 from utils.rag_engine import retrieve_rag_tool
 from utils.agent import RouterOutputAgentWorkflow
@@ -20,8 +21,9 @@ class CityExplorerChatbot:
         """Initialize chatbot, load environment variables, and setup tools."""
         load_dotenv()
 
-        # Configure OpenAI LLM
-        Settings.llm = OpenAI("gpt-3.5-turbo")
+        # Configure Ollama LLM
+        Settings.llm = Ollama("mistral")
+        Settings.embed_model = OllamaEmbedding(model_name="mistral")
 
         # Initialize AI tools
         self.sql_tool, self.rag_tool = self.initialize_tools()

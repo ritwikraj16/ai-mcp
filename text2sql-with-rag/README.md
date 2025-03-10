@@ -1,10 +1,10 @@
-# 🚀 Text2SQL with RAG Chatbot
+# Text2SQL with RAG Chatbot
 
 This repository contains a **Streamlit-based chatbot** that leverages **SQL databases** and **Retrieval-Augmented Generation (RAG)** to provide answers about major U.S. cities. The chatbot integrates **LLM-powered query engines** to fetch structured data from SQL and unstructured data from Llama Cloud.
 
 ---
 
-## 📌 **Features**
+## **Features**
 - **SQL Query Engine**: Queries structured city data using `SQLAlchemy`.
 - **RAG Query Engine**: Retrieves semantic knowledge from Llama Cloud.
 - **Hybrid Agent**: Uses `RouterOutputAgentWorkflow` to route queries.
@@ -13,7 +13,7 @@ This repository contains a **Streamlit-based chatbot** that leverages **SQL data
 
 ---
 
-## ⚙️ **Installation**
+## **Installation**
 
 1. **Clone the Repository**
    ```bash
@@ -38,16 +38,15 @@ This repository contains a **Streamlit-based chatbot** that leverages **SQL data
    ```bash
    cp .env.example .env
    ```
-   - Open `.env` and add your OpenAI API key and Llama Cloud credentials:
+   - Open `.env` and add your Llama Cloud credentials:
      ```ini
-     OPENAI_API_KEY="your-openai-api-key"
      LLAMA_CLOUD_ORG_ID="your-org-id"
      LLAMA_CLOUD_API_KEY="your-llama-cloud-api-key"
      ```
 
 ---
 
-## ▶️ **Usage**
+## **Usage**
 Run the chatbot with:
 ```bash
 streamlit run app.py
@@ -56,7 +55,7 @@ This will launch a **web-based UI** where you can enter queries about **New York
 
 ---
 
-## 🏗 **Project Structure**
+## **Project Structure**
 ```
 text2sql-with-rag/
 │── assets/                  # Images & static assets
@@ -74,7 +73,7 @@ text2sql-with-rag/
 
 ---
 
-## 📡 **How It Works**
+## **How It Works**
 1. **SQL Query Engine (`sql_engine.py`)**:
    - Creates an **in-memory SQLite database**.
    - Stores structured **city statistics**.
@@ -94,7 +93,7 @@ text2sql-with-rag/
 
 ---
 
-## 🔥 **Example Queries**
+## **Example Queries**
 | Query                        | Response Source  |
 |------------------------------|-----------------|
 | "What's the population of Miami?" | **SQL Database** |
@@ -104,7 +103,7 @@ text2sql-with-rag/
 
 ---
 
-## 🛠 **Troubleshooting**
+## **Troubleshooting**
 ### 1️⃣ API Key Issues
 If you see **authentication errors**, ensure:
 - Your `.env` file has **valid API keys**.
