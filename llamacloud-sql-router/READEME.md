@@ -2,7 +2,8 @@
 
 This repository demonstrates how to build a custom agent that intelligently routes queries between different data sources - specifically a LlamaCloud index for RAG-based retrieval and a SQL database for structured data queries.
 
-![System Overview](media/image3.png)
+![image](https://github.com/user-attachments/assets/9f74b35a-8b50-44a3-91d1-3803edfd0a6f)
+
 
 ## Overview
 
@@ -27,8 +28,14 @@ The data is divided into two types:
 
 Here's what the application looks like when running:
 
-![Demo Screenshot 1](media/image1.png)
-![Demo Screenshot 2](media/image2.png)
+![image](https://github.com/user-attachments/assets/a9eadc36-5f9e-4450-9eac-f071887ab497)
+
+
+
+
+![image](https://github.com/user-attachments/assets/4b0d4294-e5e3-4a0f-b42b-7a2323daa3fa)
+
+
 
 ## Technologies Used
 
@@ -36,16 +43,18 @@ Here's what the application looks like when running:
 - **SQLAlchemy**: For accessing and querying structured data
 - **OpenAI**: For generating embeddings and handling natural language queries
 - **Streamlit**: For creating a simple user interface
-- **LlamaIndex Workflow**: For orchestrating the agent's decision making process
+- **LlamaIndex Workflow**: For orchestrating the agent's decision-making process
 
 ## System Architecture
 
 The system follows this architecture:
 
-![System Architecture](media/image4.png)
+![DD-Solution Development workflow drawio](https://github.com/user-attachments/assets/cabde8bf-8812-4ed6-bc88-084f3d5a142f)
+
+
 
 The workflow consists of:
-1. User submits a question through the UI
+1. The user submits a question through the UI
 2. A router agent decides which tool to use for retrieving contextual data
 3. The appropriate tool is invoked to retrieve the context
 4. The LLM produces a response based on the retrieved context
@@ -100,7 +109,8 @@ streamlit run app.py
 
 We create two tools for retrieving contextual data:
 
-![Tools Creation](media/image5.png)
+![image](https://github.com/user-attachments/assets/1c124c0f-7d25-497a-bf64-a4c4f4e92b65)
+
 
 1. **SQL Tool**: Translates natural language to SQL queries to retrieve city statistics
 2. **LlamaCloud Tool**: Uses RAG retrieval for semantic questions about cities
@@ -109,7 +119,8 @@ We create two tools for retrieving contextual data:
 
 The agent's workflow wraps these tools and makes them available to the decision-making process:
 
-![Agent Workflow](media/image6.png)
+![image](https://github.com/user-attachments/assets/19828e39-12ce-4c3f-8703-9fcc728e48da)
+
 
 The workflow follows these steps:
 1. `prepare_chat()`: Processes the user's message
@@ -167,13 +178,7 @@ llamacloud-sql-router/
 - Extend to more cities and types of information
 - Implement error handling and fallback mechanisms
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[MIT License](LICENSE)
 
 ## Acknowledgements
 
