@@ -1,6 +1,6 @@
 #  Insurance Claim Workflow by Federico Trotta
 
-
+![Project name by Federico Trotta](./img/flow.gif)
 
 
 
