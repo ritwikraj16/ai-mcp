@@ -64,15 +64,15 @@ The (#project-set-up-cloudllama) sub-paragraph discusses how to set and retrieve
 In cloudllama, do the following:
 - In [cloudllama](https://cloud.llamaindex.ai/), the `LLAMA_ORG_ID` go to **Settings** > **Organization** > **Organization ID**. The value of **Organization ID** is the one you have to set for `LLAMA_ORG_ID`.
 
-![Organization ID by Federico Trotta](/img/org_id.png)
+![Organization ID by Federico Trotta](./img/org_id.png) 
 
 - Still in **Settings**, give a name to **Project Name** under the **Projects** table. This must be the same value as the variable `project_name` of the `LlamaCloudIndex()` method.
 
-![Project name by Federico Trotta](/img/project_name.png)
+![Project name by Federico Trotta](./img/project_name.png)
 
 - The project assumes the possiblity of parsing a PDF file that can be downloaded from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf). However, you can skip this passage and copy and paste the `.json` and `.md` files you find in the `data/` folder of this repository as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. Do the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
 
-![Declarations by Federico Trotta](/img/declarations.png)
+![Declarations by Federico Trotta](./img/declarations.png)
 
 ## Run the application
 To run the application, type:
