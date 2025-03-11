@@ -139,29 +139,6 @@ The workflow follows these steps:
 - "How do people in Chicago get around?" (routes to LlamaCloud)
 - "What is the historical name of Los Angeles?" (routes to LlamaCloud)
 
-## Project Structure
-
-```
-llamacloud-sql-router/
-├── app.py                  # Streamlit application
-├── config.py               # Configuration settings
-├── router/
-│   ├── __init__.py
-│   ├── workflow.py         # Router agent workflow
-│   └── events.py           # Event classes for the workflow
-├── tools/
-│   ├── __init__.py
-│   ├── sql_tool.py         # SQL query tool
-│   └── rag_tool.py         # RAG retrieval tool
-├── data/
-│   ├── db_init.py          # Database initialization
-│   └── city_stats.sql      # SQL data for cities
-├── notebooks/
-│   └── llamacloud_sql_router.ipynb  # Jupyter notebook with examples
-├── media/                  # Images for documentation
-├── requirements.txt        # Dependencies
-└── README.md               # This file
-```
 
 ## Limitations
 
