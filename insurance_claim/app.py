@@ -138,7 +138,7 @@ index = LlamaCloudIndex(
     name="auto_insurance_policies_0",
     project_name="Daily_Dose_of_DS",
     organization_id= os.environ["LLAMA_ORG_ID"], 
-    api_key= os.environ["LLAMA_CLOUD_API_KEY"] 
+    api_key= os.environ["LLAMA_API_KEY"] 
 )
 retriever = index.as_retriever(rerank_top_n=3)
 
@@ -147,7 +147,7 @@ declarations_index = LlamaCloudIndex(
     name="auto_insurance_declarations_0",
     project_name="Daily_Dose_of_DS",
     organization_id= os.environ["LLAMA_ORG_ID"], 
-    api_key= os.environ["LLAMA_CLOUD_API_KEY"] 
+    api_key= os.environ["LLAMA_API_KEY"] 
 )
 
 def get_declarations_docs(policy_number: str, top_k: int = 1):
