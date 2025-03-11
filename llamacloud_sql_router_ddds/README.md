@@ -4,6 +4,7 @@ This project creates a custom agent that can query either your LlamaCloud index 
 
 We use:
 * LlamaIndex for orchestrating the RAG app.
+* SQL to create a database and store city populations.
 * Streamlit to build the UI.
 
 A demo is shown below:
@@ -11,4 +12,27 @@ A demo is shown below:
 
 ## Installation and setup
 
-In this example, we'll use PDFs of Wikipedia pages of US cities and a SQL database of their populations and states as documents.
+### Setup OpenAI
+Get an API key from OpenAI and set it in the .env file as follows:
+```
+OPENAI_API_KEY = YOUR_OPENAI_API_KEY
+```
+
+### Setup LlamaCloud 
+Get an API key from LlamaCloud and set it in the .env file as follows:
+```
+LLAMA_API_KEY = YOUR_LLAMA_API_KEY
+```
+
+<b>Install Dependencies<b>: Ensure you have Python 3.10 or later installed.
+```
+pip install -r requirements.txt
+```
+ 
+<b>Run the app:<p>
+Run the app by running the following command:
+```
+streamlit run app.py
+```
+
+## Stay Updated with Our Newsletter!
