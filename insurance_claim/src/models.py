@@ -29,6 +29,7 @@ class PolicyRecommendation(BaseModel):
     Guideline/Policy recommendation schema.
     Policy recommendation regarding a given claim.
     """
+    covered: bool = Field(..., description="Whether the claim is covered by the policy")
     policy_section: str = Field(..., description="The policy section or clause that applies.")
     recommendation_summary: str = Field(..., description="A concise summary of coverage determination.")
     deductible: Optional[float] = Field(None, description="The applicable deductible amount.")
