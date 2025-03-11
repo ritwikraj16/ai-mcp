@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 from llama_index.indices.managed.llama_cloud import LlamaCloudIndex
+from llama_index.core.vector_stores.types import MetadataFilters
 from llama_index.llms.openai import OpenAI
+
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -27,7 +29,6 @@ def get_declarations_docs(policy_number: str, top_k: int = 1):
     """
     Retrieve declarations documents for the given policy number using metadata filtering.
     """
-    from llama_index.core.vector_stores.types import MetadataFilters
     filters = MetadataFilters.from_dicts([
         {"key": "policy_number", "value": policy_number}
     ])
@@ -38,6 +39,6 @@ def get_declarations_docs(policy_number: str, top_k: int = 1):
     )
     return declarations_retriever.retrieve(f"declarations page for {policy_number}")
 
-# Instantiate the OpenAI LLM (GPT-4)
+# Instantiate the OpenAI LLM
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 llm = OpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)

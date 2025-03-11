@@ -5,10 +5,7 @@ from .prompts import GENERATE_POLICY_QUERIES_PROMPT, POLICY_RECOMMENDATION_PROMP
 from .utils import parse_claim_from_text
 from .config import policy_retriever, get_declarations_docs, llm
 
-# --------------------------
 # Define Workflow Events
-# --------------------------
-
 class ClaimInfoEvent(Event):
     def __init__(self, claim_info: ClaimInfo):
         self.claim_info = claim_info
@@ -39,10 +36,8 @@ class LogEvent(Event):
         self.msg = msg
         self.delta = delta
 
-# --------------------------
-# Define the Workflow
-# --------------------------
 
+# Define the Workflow
 class AutoInsuranceWorkflow(Workflow):
     """
     Workflow to process an auto insurance claim and generate a recommendation.
@@ -85,7 +80,7 @@ class AutoInsuranceWorkflow(Workflow):
             for d in docs:
                 combined_docs[d.id_] = d
 
-        # Also fetch the declarations page for the policy holder
+        # Fetch the declarations page for the policy holder
         d_doc = get_declarations_docs(claim_info.policy_number)[0]
         combined_docs[d_doc.id_] = d_doc
 

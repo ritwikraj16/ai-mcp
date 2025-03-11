@@ -8,7 +8,7 @@
 
 ### Requirements
 To replicate this tutorial must match the following requirements:
-- Python 3.10.1 higher installed on your machine.
+- Python 3.10.1 or higher installed on your machine.
 - A valid llamaindex API key that can be retrieved [here](https://cloud.llamaindex.ai/).
 - A valid OpenAI API key that can be retrieved [here](https://platform.openai.com/api-keys).
 
