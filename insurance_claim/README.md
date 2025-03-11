@@ -18,7 +18,8 @@ Suppose you call the main folder of your project `insurance_claim/`. At the end 
 insurance_claim/
     ├── data/
     ├── venv/
-    ├── .env
+    ├── src/
+        └── .env
     ├── app.py
     └── requirements.txt
 ```
@@ -26,9 +27,10 @@ insurance_claim/
 Where:
 - `data/` contains files to insert into [cloudllama](#project-set-up-cloudllama).
 - `venv/` contains the virtual environment.
-- `app.py` is the Python file containing all the logic.
+- `src/` contains all the Python modules to import into the main file which is called `app.py`.
+- `app.py` is the main Python file of the project.
 - `requirements.txt` is the file coitaining the requirements to install.
-- `.env` is the file cointaining the values of the environment variables with the values of your API keys.
+- `.env` is the file cointaining the the environment variables with the values of your API keys.
 
 You can create the venv/ virtual environment directory like so:
 ```plaintext
