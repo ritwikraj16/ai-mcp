@@ -25,8 +25,8 @@ Before running the application, ensure you have the following installed:
    Clone this repository to your local machine:
 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/patchy631/ai-engineering-hub
+   cd rag_text2sql
    ```
    
 2. ** Create a Python Virtual Environment**
