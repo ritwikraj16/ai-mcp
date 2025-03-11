@@ -1,4 +1,3 @@
-# Prompt used to generate insurance policy queries
 GENERATE_POLICY_QUERIES_PROMPT = """\
 You are an assistant tasked with determining what insurance policy sections to consult for a given auto claim.
 
@@ -16,7 +15,6 @@ Claim Data:
 Return a JSON object matching the PolicyQueries schema.
 """
 
-# Prompt used to generate a policy recommendation based on the retrieved policy sections
 POLICY_RECOMMENDATION_PROMPT = """\
 Given the retrieved policy sections for this claim, determine:
 - If the collision is covered

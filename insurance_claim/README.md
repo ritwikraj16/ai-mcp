@@ -19,8 +19,8 @@ insurance_claim/
     ├── data/
     ├── venv/
     ├── src/
-        └── .env
     ├── app.py
+    ├── .env
     └── requirements.txt
 ```
 

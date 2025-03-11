@@ -1,51 +1,47 @@
+import os
+from typing import Optional
+
 from llama_index.core.workflow import Event, StartEvent, StopEvent, Context, Workflow, step
+from llama_index.llms.openai import OpenAI
+from llama_index.core.retrievers import BaseRetriever
 from llama_index.core.prompts import ChatPromptTemplate
+
 from .models import ClaimInfo, PolicyQueries, PolicyRecommendation, ClaimDecision
 from .prompts import GENERATE_POLICY_QUERIES_PROMPT, POLICY_RECOMMENDATION_PROMPT
 from .utils import parse_claim_from_text
-from .config import policy_retriever, get_declarations_docs, llm
+from .indices import get_declarations_docs
 
-# Define Workflow Events
+# Define Workflow Event Classes
+
 class ClaimInfoEvent(Event):
-    def __init__(self, claim_info: ClaimInfo):
-        self.claim_info = claim_info
-
+    claim_info: ClaimInfo
 
 class PolicyQueryEvent(Event):
-    def __init__(self, queries: PolicyQueries):
-        self.queries = queries
-
+    queries: PolicyQueries
 
 class PolicyMatchedEvent(Event):
-    def __init__(self, policy_text: str):
-        self.policy_text = policy_text
-
+    policy_text: str
 
 class RecommendationEvent(Event):
-    def __init__(self, recommendation: PolicyRecommendation):
-        self.recommendation = recommendation
-
+    recommendation: PolicyRecommendation
 
 class DecisionEvent(Event):
-    def __init__(self, decision: ClaimDecision):
-        self.decision = decision
-
+    decision: ClaimDecision
 
 class LogEvent(Event):
-    def __init__(self, msg: str, delta: bool = False):
-        self.msg = msg
-        self.delta = delta
+    msg: str
+    delta: bool = False
 
-
-# Define the Workflow
 class AutoInsuranceWorkflow(Workflow):
     """
+    Auto Insurance Claim Workflow.
     Workflow to process an auto insurance claim and generate a recommendation.
     """
-    def __init__(self, policy_retriever, llm, output_dir: str = "data_out", **kwargs) -> None:
+    def __init__(self, policy_retriever: BaseRetriever, llm: Optional[OpenAI] = None, output_dir: str = "data_out", **kwargs) -> None:
         super().__init__(**kwargs)
         self.policy_retriever = policy_retriever
-        self.llm = llm
+        self.llm = llm or OpenAI(model="gpt-4o", api_key=os.environ["OPENAI_API_KEY"])
+        self._verbose = kwargs.get('verbose', False)
 
     @step
     async def load_claim_info(self, ctx: Context, ev: StartEvent) -> ClaimInfoEvent:
@@ -80,7 +76,7 @@ class AutoInsuranceWorkflow(Workflow):
             for d in docs:
                 combined_docs[d.id_] = d
 
-        # Fetch the declarations page for the policy holder
+        # Also fetch the declarations page for the policy holder
         d_doc = get_declarations_docs(claim_info.policy_number)[0]
         combined_docs[d_doc.id_] = d_doc
 
@@ -110,9 +106,7 @@ class AutoInsuranceWorkflow(Workflow):
             ctx.write_event_to_stream(LogEvent(msg=">> Finalizing Decision"))
         claim_info = await ctx.get("claim_info")
         rec = ev.recommendation
-        covered = "covered" in rec.recommendation_summary.lower() or (
-            rec.settlement_amount is not None and rec.settlement_amount > 0
-        )
+        covered = "covered" in rec.recommendation_summary.lower() or (rec.settlement_amount is not None and rec.settlement_amount > 0)
         deductible = rec.deductible if rec.deductible is not None else 0.0
         recommended_payout = rec.settlement_amount if rec.settlement_amount else 0.0
         decision = ClaimDecision(

@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
 from typing import List, Optional
+from pydantic import BaseModel, Field
 
 class ClaimInfo(BaseModel):
     """
-    Input Claim Information schema provided by the Claim Adjuster.
+    Input Claim Information schema by the Claim Adjuster.
+    Extracted Insurance claim information.
     """
     claim_number: str
     policy_number: str
@@ -13,19 +14,19 @@ class ClaimInfo(BaseModel):
     estimated_repair_cost: float
     vehicle_details: Optional[str] = None
 
-
 class PolicyQueries(BaseModel):
     """
-    Schema for the list of queries to be used for retrieving relevant policy sections.
+    Policy Conditions and Policy Queries.
+    Defining the schema to generate guideline queries and for storing recommendations.
     """
     queries: List[str] = Field(
         default_factory=list,
         description="A list of query strings to retrieve relevant policy sections."
     )
 
-
 class PolicyRecommendation(BaseModel):
     """
+    Guideline/Policy recommendation schema.
     Policy recommendation regarding a given claim.
     """
     policy_section: str = Field(..., description="The policy section or clause that applies.")
@@ -33,10 +34,10 @@ class PolicyRecommendation(BaseModel):
     deductible: Optional[float] = Field(None, description="The applicable deductible amount.")
     settlement_amount: Optional[float] = Field(None, description="Recommended settlement payout.")
 
-
 class ClaimDecision(BaseModel):
     """
     Final Claim Decision schema.
+    Claim decision information for a given claim.
     """
     claim_number: str
     covered: bool
