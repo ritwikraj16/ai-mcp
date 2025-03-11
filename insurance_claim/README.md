@@ -1,8 +1,15 @@
 #  Insurance Claim Workflow by Federico Trotta
+This project builds an auto insurance claim processing workflow. The image below shows the running application:
 
-![Project name by Federico Trotta](./img/flow.gif)
+![Process flow by Federico Trotta](./img/flow.gif)
 
+Note that the loading of the PDF file is simulated: the actual data management is done via cloudllama as per how it is specified [here](https://github.com/run-llama/llamacloud-demo/blob/main/examples/document_workflows/auto_insurance_claims/auto_insurance_claims.ipynb) in the section "Indexing Policy Documents" and below in the [Project set up: cloudllama](#project-set-up-cloudllama) section.
 
+Here is the architecture of the workflow:
+
+![Architecture workflow by Federico Trotta](./img/workflow.png) 
+
+The Twitter/X Thread Draft is here.
 
 ## Installation
 
@@ -70,9 +77,15 @@ In cloudllama, do the following:
 
 ![Project name by Federico Trotta](./img/project_name.png)
 
-- The project assumes the possiblity of parsing a PDF file that can be downloaded from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf). However, you can skip this passage and copy and paste the `.json` and `.md` files you find in the `data/` folder of this repository as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. Do the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
+- Copy and paste the `.json` and `.md` files you find in the `data/` folder of this repository as new indexes in cloudllama. To do so, in the section **Index** click on **Create index** and drag and drop the two `.md` files and name the index as `auto_insurance_declarations_0`. Do the same for the two `.json` files and name the index as `auto_insurance_policies_0`.
 
 ![Declarations by Federico Trotta](./img/declarations.png)
+
+- Download the reference PDF file from [here](https://nationalgeneral.com/forms_catalog/CAIP400_03012006_CA.pdf) and load it in the **Parse**. Then, click on **Parse**.
+
+![Parsing the PDF by Federico Trotta](./img/parse_pdf.png)
+
+Note that the project has been named as `Daily_Dose_of_DS`. You can rename the project later after loading. Also, this must be the name of the variable `project_name` of the methods `index = LlamaCloudIndex()` and `declarations_index = LlamaCloudIndex()` you find in the `indices.py` file inside the src/ folder.
 
 ## Run the application
 To run the application, type:
