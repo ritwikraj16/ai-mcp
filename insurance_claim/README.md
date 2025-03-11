@@ -9,14 +9,14 @@ Here is the architecture of the workflow:
 
 ![Architecture workflow by Federico Trotta](./img/workflow.png) 
 
-The Twitter/X Thread Draft is here.
+Look at the Twitter/X Thread Draft [here](https://typefully.com/_FedericoTrotta/zxEdoDd).
 
 ## Installation
 
 ### Requirements
 To replicate this tutorial must match the following requirements:
 - Python 3.10.1 or higher installed on your machine.
-- A valid llamaindex API key that can be retrieved [here](https://cloud.llamaindex.ai/).
+- A valid coludllama API key that can be retrieved [here](https://cloud.llamaindex.ai/).
 - A valid OpenAI API key that can be retrieved [here](https://platform.openai.com/api-keys).
 
 ### Prerequisites
