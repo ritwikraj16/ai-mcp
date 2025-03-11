@@ -65,7 +65,7 @@ LLAMA_ORG_ID = ""
 LLAMA_API_KEY= ""
 ```
 
-The (#project-set-up-cloudllama) sub-paragraph discusses how to set and retrieve their values.
+The [Project set up: cloudllama](#project-set-up-cloudllama) section discusses how to set and retrieve their values.
 
 ### Project set up: cloudllama
 In cloudllama, do the following:
