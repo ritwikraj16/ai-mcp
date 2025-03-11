@@ -1,4 +1,4 @@
-# US City Guide: Combining RAG and Text-to-SQL in a Single Query Interface
+# US City Guide 🏙️: Combining RAG and Text-to-SQL in a Single Query Interface
 
 This project creates a custom agent that can query either your LlamaCloud index for RAG-based retrieval or a separate SQL query engine as a tool. 
 
@@ -8,7 +8,7 @@ We use:
 * Streamlit to build the UI.
 
 A demo is shown below:
-- <video controls src="https://github.com/hadenpell/ai-engineering-hub/blob/dailydoseds/llamacloud_sql_router_ddds/demo.mp4" title="demo.mp4"></video>
+[Demo](https://github.com/hadenpell/ai-engineering-hub/blob/dailydoseds/llamacloud_sql_router_ddds/demo.mp4) 
 
 ## Installation and setup
 
