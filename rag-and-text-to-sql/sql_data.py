@@ -13,7 +13,7 @@ from sqlalchemy import (
 def setup_sql_database():
     """Create a SQLite database with city statistics."""
     # Define the database file path
-    db_path = "database.sqlite"
+    db_path = "city_database.sqlite"
 
     # Check if database already exists
     db_exists = os.path.exists(db_path)
