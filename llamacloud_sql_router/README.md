@@ -5,8 +5,8 @@ In this project, we use:
 - streamlit to build a UI
 - llama_index for orchestration
 
-A demo is shown below:
-
+A demo is shown below: \
+[Video demo](https://github.com/Umamahesh-J/ai-engineering-hub/blob/RAG_and_Text-to-SQL/llamacloud_sql_router/demo.mkv)
 
 ## Installation and setup
 In Linux, include the following statements in .bashrc file: 
