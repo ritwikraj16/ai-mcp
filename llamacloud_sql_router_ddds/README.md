@@ -7,7 +7,7 @@ We use:
 * SQL to create a database and store city populations.
 * Streamlit to build the UI.
 
-A demo is shown below:
+A demo is shown here:
 [Demo](https://github.com/hadenpell/ai-engineering-hub/blob/dailydoseds/llamacloud_sql_router_ddds/demo.mp4) 
 
 ## Installation and setup
