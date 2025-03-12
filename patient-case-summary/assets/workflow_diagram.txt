@@ -1,0 +1,11 @@
+Patient Case Summary Workflow
+
+[Patient Data (FHIR)] → [Data Extraction] → [Condition Mapping]
+                                              ↓
+[Case Summary] ← [Summary Generation] ← [Guideline Matching]
+
+This diagram represents the flow of data through the patient case summary workflow:
+1. Patient data in FHIR format is extracted into structured models
+2. Conditions are mapped to relevant encounters and medications
+3. Each condition is matched against clinical guidelines
+4. A comprehensive case summary is generated for clinicians 
