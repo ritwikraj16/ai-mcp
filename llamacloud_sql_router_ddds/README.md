@@ -40,4 +40,4 @@ streamlit run app.py
 ## 📬 Stay Updated with Our Newsletter!
 <b>Get a FREE Data Science eBook</b> 📖 with 150+ essential lessons in Data Science when you subscribe to our newsletter! Stay in the loop with the latest tutorials, insights, and exclusive resources. [Subscribe now!](https://join.dailydoseofds.com) 
 
-![](join_ddods.png)
+![](https://github.com/patchy631/ai-engineering-hub/blob/main/resources/join_ddods.png)
