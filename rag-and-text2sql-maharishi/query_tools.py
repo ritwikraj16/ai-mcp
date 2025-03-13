@@ -55,9 +55,9 @@ if os.path.exists('city_stats.sqlite'):
         pass
 
 
-##### Set Up Emnedding Model #####
+##### Set Up Embedding Model #####
 
-
+# use any supported FastEmbedding model
 Settings.embed_model = FastEmbedEmbedding(model_name="BAAI/bge-base-en-v1.5")
 
 
