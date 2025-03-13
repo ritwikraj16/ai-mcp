@@ -30,7 +30,6 @@ if "asyncio_event_loop" not in st.session_state:
 
 if "id" not in st.session_state:
     st.session_state.id = uuid.uuid4()
-    st.session_state.file_cache = {}
 
 session_id = st.session_state.id
 
