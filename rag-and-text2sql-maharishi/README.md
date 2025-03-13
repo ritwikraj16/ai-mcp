@@ -17,8 +17,10 @@ We use (100% local):
 |Streamlit                         |For UI                                               |                
 |CometML's Opik                    |Tracing, Observability, Evaluation                   |
 
+
 A demo is shown below:
-[Video Demo](rag-and-text2sql-maharishi)
+
+[Video Demo](https://drive.google.com/file/d/1Hr39QHG5ZyT0NKHvpTqaen7MpSdbzb05/view?usp=sharing)
 
 ---
 
