@@ -188,7 +188,7 @@ async def process_patient_data(file_path, progress_callback=None):
 
 # Streamlit UI
 st.set_page_config(
-    page_title="Generate Patient Case Report Powered by OpenAI and LlamaCloud",
+    page_title="Patient Case Report Powered by OpenAI and LlamaCloud",
     page_icon="🏥",
     layout="wide"
 )
@@ -197,7 +197,7 @@ col1, col2 = st.columns([6, 1])
 
 with col1:
     st.markdown("""
-    # Generate Patient Case Summary Powered by OpenAI and LlamaCloud
+    # Patient Case Summary Powered by OpenAI and LlamaCloud
     """)
 
 with col2:
