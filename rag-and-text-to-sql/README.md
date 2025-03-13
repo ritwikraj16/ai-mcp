@@ -13,7 +13,7 @@ This project showcases a custom agent using either a vector index for RAG or a S
 - **Vector Storage**: Qdrant VectorDB for efficient embedding storage
 
 [Video demo](demo.mp4)
-[Twitter/X thread]()
+[Twitter/X thread](https://typefully.com/t/tCuLd0k)
 
 ## Project Structure
 
