@@ -75,7 +75,7 @@ streamlit run app.py
 
 ## X Thread:
 
-X Thread: 
+For the task view the draft thread [here](https://typefully.com/t/FDKeDHO)
 
 ---
 
