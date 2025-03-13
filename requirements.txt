@@ -13,5 +13,4 @@ ollama
 pandas
 pydantic
 tqdm
-asyncio
 streamlit
