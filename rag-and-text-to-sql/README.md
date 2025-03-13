@@ -1,11 +1,10 @@
-<!-- #Dev - Bank Bot -->
+<!-- #RAG and Text-to-SQL -->
 <a name="readme-top"></a>
 <h1 align="center">Multi-Modal Agentic RAG with Dynamic Tool Selection (100% Local)</h1>
   <p align="center">
-    This AI-driven *Hybrid Query Engine* processes both *structured* (SQL-based) and *unstructured* (document-based) queries. It dynamically selects the right tool based on the user’s input.
+    The Multi-Modal Agentic RAG is an AI-powered designed to process both structured (SQL-based) and unstructured (document-based) queries. It dynamically selects the appropriate tool based on user input, enabling efficient data retrieval and summarization. 
  <br>
- This AI-driven *Hybrid Query Engine* processes both *structured* (SQL-based) and *unstructured* (document-based) queries. It dynamically selects the right tool based on the user’s input.
-    <br />
+     <br />
     <a href="https://github.com/mayank-cse1/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
@@ -36,9 +35,7 @@
       </ul>
     </li>
     <li><a href="#to-try-this-sample">Try This Sample</a></li>
-    <li><a href="#testing-the-bot-using-bot-framework-emulator">Emulator Testing</a></li>
-    <li><a href="#deploy-the-bot-to-azure">Deploying</a></li>
-    <li><a href="#flow-chart">Flow Chart</a></li>
+    <li><a href="#flow-chart">Workflow Chart</a></li>
     <li><a href="#presentation">Presentation</a></li>
     <li><a href="#implementation-video">Implementation</a></li>
     <li><a href="#demo-video">Demo Video</a></li>
@@ -50,8 +47,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+![Agentic_multi_modal_RAG_with_tool_selection](https://github.com/user-attachments/assets/5f441987-6d5e-4357-a50e-9207ed6abd41)
 
-<img width="960" alt="DEV Activity Chart" src="https://user-images.githubusercontent.com/72187020/200659507-6ab4b64f-197b-44e2-9d62-be26c4b8b101.png">
 
 The Multi-Modal Agentic RAG is an AI-powered *Hybrid Query Engine* designed to process both structured (SQL-based) and unstructured (document-based) queries. It dynamically selects the appropriate tool based on user input, enabling efficient data retrieval and summarization.  
 
@@ -162,20 +159,23 @@ docker run -p 6333:6333 qdrant/qdrant
 
 ---
 
-## Presentation
-[DEV BankingBot Presentation.pptx](https://github.com/mayank-cse/DEV-A-Virtual-Banking-Assistant/blob/main/Resources/Dev%20PPT%202.0.pptx)
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## Implementation
+
+![RAG-text-to-sql-demo](https://github.com/user-attachments/assets/80fec8e9-172c-4a5a-8440-4b75708d7c12)
+">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## Flow Chart
-<img width="960" alt="Dev_FlowChart" src="https://user-images.githubusercontent.com/72187020/205635169-2e3b0719-bc92-42e0-8d4e-46fc9b8d7a59.png">
-
-## Implementation Video
 
 
+![RouterOutputAgentWorkflow](https://github.com/user-attachments/assets/87fbf892-dd41-4292-a82f-bbd8c4dbccd0)
 
 
 ## Demo Video
+
+
+https://github.com/user-attachments/assets/08a2ebea-16ec-4f10-bedf-c60a9effa1ba
+
 
 
 
@@ -184,7 +184,7 @@ docker run -p 6333:6333 qdrant/qdrant
 
 Mayank Gupta - [@MayankGuptaCse1](https://twitter.com/MayankGuptacse1) - mayank.guptacse1@gmail.com
 
-Project Link: [https://github.com/mayank-cse1/ai-](https://github.com/mayank-cse/DEV-A-Virtual-Banking-Assistant)
+Project Link: [https://github.com/mayank-cse1/ai-engineering-hub](https://github.com/mayank-cse1/ai-engineering-hub)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
