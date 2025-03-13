@@ -1,5 +1,8 @@
 SQL + RAG Query Engine
 
+Twitter post typefully: https://typefully.com/t/su75XlG
+
+Demo Video : https://youtu.be/yFpYjAKbXpU?si=lHcS_kjPZcBvmPPI
 Project Overview
 This project is an AI-driven Hybrid Query Engine that can process both SQL-based structured queries and unstructured document searches using LlamaIndex, Ollama (Mistral), and Qdrant.
 Features
