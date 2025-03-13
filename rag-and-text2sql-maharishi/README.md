@@ -94,6 +94,7 @@ For the purpose of task, view the draft thread [here](https://typefully.com/t/FD
 ## Contribution
 Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
 
+---
 
 ## Quick Links of the Applicant:
 Adding some links about me for quick access:
