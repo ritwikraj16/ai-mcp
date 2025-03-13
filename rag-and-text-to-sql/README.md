@@ -8,7 +8,7 @@
     <a href="https://github.com/mayank-cse1/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="#demo-video">View Demo</a>
+    <a href="https://youtu.be/tuBDvjctsco">View Demo</a>
     ·
     <a href="https://github.com/mayank-cse1/ai-engineering-hub/issues">Report Bug</a>
     ·
@@ -31,16 +31,14 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#overview">Overview</a></li>
-        <li><a href="#install-ollama">Installation</a></li>
+        <li><a href="#**install-ollama-for-local-llm-access**  ">Installation</a></li>
       </ul>
     </li>
     <li><a href="#to-try-this-sample">Try This Sample</a></li>
     <li><a href="#flow-chart">Workflow Chart</a></li>
-    <li><a href="#presentation">Presentation</a></li>
-    <li><a href="#implementation-video">Implementation</a></li>
+    <li><a href="#implementation">Implementation</a></li>
     <li><a href="#demo-video">Demo Video</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#further-reading">Further Reading</a></li>
   </ol>
 </details>
 
@@ -173,10 +171,9 @@ docker run -p 6333:6333 qdrant/qdrant
 
 ## Demo Video
 
-
 https://github.com/user-attachments/assets/08a2ebea-16ec-4f10-bedf-c60a9effa1ba
 
-
+👉https://youtu.be/tuBDvjctsco👈
 
 
 <!-- CONTACT -->
