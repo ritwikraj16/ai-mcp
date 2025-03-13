@@ -12,7 +12,7 @@ This project showcases a custom agent using either a vector index for RAG or a S
 - **Observability**: Integration with Cometml's Opik for monitoring
 - **Vector Storage**: Qdrant VectorDB for efficient embedding storage
 
-[Video demo]()
+[Video demo](demo.mp4)
 [Twitter/X thread]()
 
 ## Project Structure
