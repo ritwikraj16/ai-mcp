@@ -48,6 +48,14 @@ Return a JSON object matching PolicyRecommendation schema.
 """
 
 class AutoInsuranceWorkflow(Workflow):
+    """
+    Orchestrates the AI-based auto insurance claim processing workflow.
+    :param policy_retriever: Retrieves relevant policy documents.
+    :param declarations_index: Optional index for fetching declarations pages.
+    :param llm: Language model for generating queries and recommendations.
+    :param output_dir: Directory path for output artifacts (if utilized).
+    """
+
     def __init__(
         self,
         policy_retriever,
@@ -102,6 +110,9 @@ class AutoInsuranceWorkflow(Workflow):
                 ctx.write_event_to_stream(LogEvent(msg=f">> Query: {query}"))
             # fetch policy text
             docs = await self.policy_retriever.aretrieve(query)
+            if not docs:
+                ctx.write_event_to_stream(LogEvent(msg=f">> Warning: No documents returned for query: {query}"))
+
             for d in docs:
                 combined_docs[d.id_] = d
 
@@ -130,15 +141,20 @@ class AutoInsuranceWorkflow(Workflow):
             ctx.write_event_to_stream(LogEvent(msg=">> Generating Policy Recommendation"))
         claim_info = await ctx.get("claim_info")
         prompt = ChatPromptTemplate.from_messages([("user", POLICY_RECOMMENDATION_PROMPT)])
-        recommendation = await self.llm.astructured_predict(
-            PolicyRecommendation,
-            prompt,
-            claim_info=claim_info.model_dump_json(),
-            policy_text=ev.policy_text
-        )
-        if self._verbose:
-            ctx.write_event_to_stream(LogEvent(msg=f">> Recommendation: {recommendation.model_dump_json()}"))
-        return RecommendationEvent(recommendation=recommendation)
+        try:
+            recommendation = await self.llm.astructured_predict(
+                PolicyRecommendation,
+                prompt,
+                claim_info=claim_info.model_dump_json(),
+                policy_text=ev.policy_text
+            )
+            if self._verbose:
+                ctx.write_event_to_stream(LogEvent(msg=f">> Recommendation: {recommendation.model_dump_json()}"))
+            return RecommendationEvent(recommendation=recommendation)
+        except Exception as e:
+            if self._verbose:
+                ctx.write_event_to_stream(LogEvent(msg=f">> Error generating recommendation: {e}"))
+            raise e
 
     @step
     async def finalize_decision(self, ctx: Context, ev: RecommendationEvent) -> DecisionEvent:

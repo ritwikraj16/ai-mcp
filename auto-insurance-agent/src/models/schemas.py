@@ -12,6 +12,7 @@ class ClaimInfo(BaseModel):
     vehicle_details: Optional[str] = None
 
 class PolicyQueries(BaseModel):
+    """Collection of queries to retrieve relevant policy sections."""
     queries: List[str] = Field(
         default_factory=list,
         description="A list of query strings to retrieve relevant policy sections."
@@ -25,8 +26,9 @@ class PolicyRecommendation(BaseModel):
     settlement_amount: Optional[float] = Field(None, description="Recommended settlement payout.")
 
 class ClaimDecision(BaseModel):
-    claim_number: str
-    covered: bool
-    deductible: float
-    recommended_payout: float
-    notes: Optional[str] = None 
+    """Final decision regarding an insurance claim."""
+    claim_number: str = Field(..., description="The unique identifier for the claim.")
+    covered: bool = Field(..., description="Whether the claim is covered by the policy.")
+    deductible: float = Field(..., description="The deductible amount to be paid by the claimant.")
+    recommended_payout: float = Field(..., description="The final amount recommended for payout.")
+    notes: Optional[str] = Field(None, description="Additional notes regarding the decision.") 

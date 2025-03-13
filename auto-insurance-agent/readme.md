@@ -7,6 +7,7 @@ An AI-powered application for processing auto insurance claims using Large Langu
 ## Project Overview
 
 This application builds an automated insurance claim processing workflow that:
+
 - Analyzes insurance claim information
 - Retrieves relevant policy information using vector search
 - Determines coverage eligibility based on policy documents
@@ -42,7 +43,7 @@ This application builds an automated insurance claim processing workflow that:
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/patchy631/ai-engineering-hub.git
 cd auto-insurance-agent
 ```
 
@@ -55,11 +56,13 @@ python -m venv venv
 3. Activate the virtual environment:
 
    On Windows:
+
    ```bash
    venv\Scripts\activate
    ```
 
    On macOS/Linux:
+
    ```bash
    source venv/bin/activate
    ```
@@ -93,15 +96,15 @@ uv pip install -r requirements.txt
 
 Create a `.env` file in the project root with the following:
 
-```
+```env
 OPENAI_API_KEY = "your_openai_api_key"
-LLAMA_ORG_ID = "your_llama_org_id"
-LLAMA_API_KEY = "your_llama_api_key"
+LLAMA_CLOUD_ORG_ID = "your_organization_id_here"
+LLAMA_CLOUD_API_KEY = "your_llama_cloud_api_key"
 ```
 
 ### Project Structure
 
-```
+```text
 auto-insurance-agent/
 ├── data/                  # Sample insurance policy data
 │   ├── alice-declarations.md
@@ -155,7 +158,7 @@ To start the application:
 streamlit run app.py
 ```
 
-Navigate to the URL shown in the terminal (typically http://localhost:8501) to access the interface.
+Navigate to the URL shown in the terminal (typically [http://localhost:8501](http://localhost:8501)) to access the interface.
 
 ## Usage
 

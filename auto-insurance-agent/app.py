@@ -41,18 +41,20 @@ def main():
     with st.sidebar.expander("API Keys", expanded=False):
         openai_api_key = st.text_input("OpenAI API Key", type="password")
         llama_cloud_api_key = st.text_input("LlamaCloud API Key", type="password")
-        
-        if openai_api_key:
-            os.environ["OPENAI_API_KEY"] = openai_api_key
-        if llama_cloud_api_key:
-            os.environ["LLAMA_CLOUD_API_KEY"] = llama_cloud_api_key
 
     # Index configuration
     with st.sidebar.expander("Index Configuration", expanded=False):
         claim_index_name = st.text_input("LlamaCloud Claims Index Name", value="auto-insurance-claims")
         declarations_index_name = st.text_input("LlamaCloud Declarations Index Name", value="auto-insurance-declarations")
-        llama_cloud_org_id = st.text_input("Organization ID", value="92817138-77ca-44f5-87af-843db4ca86aa")
+        llama_cloud_org_id = st.text_input("Organization ID", type="password")
     
+        if openai_api_key:
+            os.environ["OPENAI_API_KEY"] = openai_api_key
+        if llama_cloud_api_key:
+            os.environ["LLAMA_CLOUD_API_KEY"] = llama_cloud_api_key
+        if llama_cloud_org_id:
+            os.environ["LLAMA_CLOUD_ORG_ID"] = llama_cloud_org_id
+
     with tab1:
         st.markdown("""
         This app processes auto insurance claims by:
@@ -151,7 +153,7 @@ def main():
                 st.write(f"**Vehicle:** {claim_data.get('vehicle_details', 'N/A')}")
                 st.write(f"**Estimated Repair Cost:** ${claim_data['estimated_repair_cost']:.2f}")
             
-            st.write(f"**Loss Description:**")
+            st.write("**Loss Description:**")
             st.write(claim_data['loss_description'])
             
             # Process button

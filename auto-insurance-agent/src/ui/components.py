@@ -40,7 +40,6 @@ class StreamlitEventHandler:
     def __init__(self, progress_container, details_container):
         self.progress_container = progress_container
         self.details_container = details_container
-        self.messages = []
         self.current_step = 0
         self.policy_queries = []  # Store policy queries
         self.retrieval_queries = []  # Store retrieval queries
@@ -154,7 +153,14 @@ class StreamlitEventHandler:
                             </ul>
                         </div>
                         """, unsafe_allow_html=True)
-                except:
+                except json.JSONDecodeError as e:
+                    self.details_container.markdown(f"Error parsing recommendation JSON: {e}")
+                    self.details_container.markdown(event.msg)
+                except KeyError as e:
+                    self.details_container.markdown(f"Missing required field in recommendation data: {e}")
+                    self.details_container.markdown(f"Available fields: {list(rec_data.keys()) if 'rec_data' in locals() else 'None'}")
+                except Exception as e:
+                    self.details_container.markdown(f"Unexpected error processing recommendation: {str(e)}")
                     self.details_container.markdown(event.msg)
             else:
                 with self.details_container.expander("🔄 Processing Log", expanded=True):

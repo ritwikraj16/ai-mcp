@@ -1,5 +1,9 @@
 import json
 import os
+import logging
+
+logger = logging.getLogger(__name__)
+
 from ..models.schemas import ClaimInfo
 
 def parse_claim(file_path: str) -> ClaimInfo:
@@ -37,7 +41,7 @@ def get_declarations_docs(policy_number: str, top_k: int = 1, declarations_index
             if docs:
                 all_docs.extend(docs)
         except Exception as e:
-            print(f"Error with filtered retrieval: {str(e)}")
+            logger.error("Error with filtered retrieval: %s", e)
         
         # If no results, try without filters but with more specific queries
         if not all_docs:
@@ -50,10 +54,19 @@ def get_declarations_docs(policy_number: str, top_k: int = 1, declarations_index
                     f"{policy_number} declarations",
                     f"{policy_number} policy declarations",
                     f"{policy_number} insurance declarations",
-                    # Add queries for specific policy holders if we know them
-                    "John Smith declarations" if "ABC123" in policy_number else None,
-                    "Alice Johnson declarations" if "DEF456" in policy_number else None
+                    # Use a dictionary to map policy prefixes to policyholder names
                 ]
+                
+                # Map policy prefixes to policyholder names for more specific queries
+                policy_holder_map = {
+                    "ABC123": "John Smith declarations",
+                    "DEF456": "Alice Johnson declarations"
+                }
+                
+                # Get policy-specific query if available
+                policy_prefix = policy_number[:6] if len(policy_number) >= 6 else policy_number
+                if policy_prefix in policy_holder_map:
+                    queries.append(policy_holder_map[policy_prefix])
                 
                 # Filter out None values
                 queries = [q for q in queries if q]
@@ -63,12 +76,12 @@ def get_declarations_docs(policy_number: str, top_k: int = 1, declarations_index
                         docs = retriever.retrieve(query)
                         if docs:
                             all_docs.extend(docs)
-                            print(f"Found docs with query: {query}")
+                            logger.info("Found docs with query: %s", query)
                             break  # Stop once we find documents
                     except Exception as query_e:
-                        print(f"Error with query '{query}': {str(query_e)}")
+                        logger.error("Error with query '%s': %s", query, query_e)
             except Exception as e:
-                print(f"Error with unfiltered retrieval: {str(e)}")
+                logger.error("Error with unfiltered retrieval: %s", e)
         
         # Return unique documents
         unique_docs = {}
@@ -78,16 +91,32 @@ def get_declarations_docs(policy_number: str, top_k: int = 1, declarations_index
         return list(unique_docs.values())
     except Exception as e:
         # Log the error but don't crash
-        print(f"Error retrieving declarations: {str(e)}")
+        logger.error("Error retrieving declarations: %s", e)
         return []
 
-def get_local_declaration_file(policy_number: str):
-    """Check for local declaration files in the data directory."""
-    # Map policy numbers to potential file names
-    policy_file_map = {
+def load_policy_file_mapping():
+    """Load policy to file mapping from configuration file or database."""
+    # Default mapping in case the config file is not available
+    default_mapping = {
         "POLICY-ABC123": "data/john-declarations.md",
         "POLICY-DEF456": "data/alice-declarations.md"
     }
+    
+    try:
+        # Try to load from a configuration file
+        config_path = "config/policy_mappings.json"
+        if os.path.exists(config_path):
+            with open(config_path, "r") as f:
+                return json.load(f)
+        return default_mapping
+    except Exception as e:
+        logger.error("Error loading policy file mapping: %s", e)
+        return default_mapping
+
+def get_local_declaration_file(policy_number: str):
+    """Check for local declaration files in the data directory."""
+    # Load mapping from a configuration file or database
+    policy_file_map = load_policy_file_mapping()
     
     # Check if we have a mapping for this policy number
     if policy_number in policy_file_map:
@@ -97,7 +126,7 @@ def get_local_declaration_file(policy_number: str):
                 with open(file_path, "r") as f:
                     return f.read()
         except Exception as e:
-            print(f"Error reading local declaration file: {str(e)}")
+            logger.error("Error reading local declaration file: %s", e)
     
     # Also try a more general pattern search in the data directory
     try:
@@ -109,7 +138,7 @@ def get_local_declaration_file(policy_number: str):
                     with open(file_path, "r") as f:
                         return f.read()
     except Exception as e:
-        print(f"Error searching for declaration files: {str(e)}")
+        logger.error("Error searching for declaration files: %s", e)
     
     return None
 
