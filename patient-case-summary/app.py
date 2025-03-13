@@ -197,12 +197,13 @@ col1, col2 = st.columns([6, 1])
 
 with col1:
     st.markdown("""
-    # Patient Case Summary Powered by OpenAI and LlamaCloud
+    # Patient Case Summary Generator
+    ## Powered by OpenAI and LlamaCloud
     """)
 
 with col2:
     st.button("Reset ↺", on_click=reset_session)
-
+  
 # Sidebar for file upload
 with st.sidebar:
     st.header("Upload Patient Data")
