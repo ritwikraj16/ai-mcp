@@ -1,4 +1,4 @@
-# LLM With Multiple Query Tools (SQl & RAG)
+# LLM With Multiple Query Tools (SQL & RAG)
 
 The project builds a LLM powered chatbot that has access to two tools to answer user question:
 - SQL Tool for querying database
@@ -6,8 +6,7 @@ The project builds a LLM powered chatbot that has access to two tools to answer 
 
 LLM will convert user natural language questions to appropriate SQL query or relevant input query for RAG setup to fetch data.
 
-
-## **We use (100% local):**
+We use (100% local):
 
 |Tech Stack                        |Purpose                                              |
 |----------------------------------|-----------------------------------------------------|
@@ -21,6 +20,7 @@ LLM will convert user natural language questions to appropriate SQL query or rel
 A demo is shown below:
 [Video Demo](rag-and-text2sql-maharishi)
 
+---
 
 ## Installation and Setup
 
@@ -69,18 +69,20 @@ Now run the streamlit application:
 ```python
 streamlit run app.py
 ```
+---
 
 ## X Thread:
 
 X Thread: 
 
-## 📬 Stay Updated with Our Newsletter!
+---
 
 ## 📬 Stay Updated with Our Newsletter!
 **Get a FREE Data Science eBook** 📖 with 150+ essential lessons in Data Science when you subscribe to our newsletter! Stay in the loop with the latest tutorials, insights, and exclusive resources. [Subscribe now!](https://join.dailydoseofds.com)
 
 [![Daily Dose of Data Science Newsletter](https://github.com/patchy631/ai-engineering/blob/main/resources/join_ddods.png)](https://join.dailydoseofds.com)
 
+---
 
 ## Contribution
 Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
