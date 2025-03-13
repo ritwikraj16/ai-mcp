@@ -63,14 +63,17 @@ for row in rows:
 sql_database = SQLDatabase(engine, include_tables=["city_stats"])
 sql_query_engine = NLSQLTableQueryEngine(sql_database=sql_database, tables=["city_stats"])
 
-# Load PDF Documents
+import os  
+
+# Get PDF folder path from environment variable, default to "data"
+pdf_files_env = os.environ.get("PDF_FILES_PATH", "data")
+
+# Construct file paths dynamically
 pdf_files = [
-    r"E:\rag and sql\New York City - Wikipedia.pdf",
-    r"E:\rag and sql\Chicago - Wikipedia.pdf",
-    r"E:\rag and sql\Houston - Wikipedia.pdf",
-    r"E:\rag and sql\Seattle - Wikipedia.pdf",
-    r"E:\rag and sql\Miami - Wikipedia.pdf"
+    os.path.join(pdf_files_env, "New York City - Wikipedia.pdf"),
+    os.path.join(pdf_files_env, "Chicago - Wikipedia.pdf"),
 ]
+
 
 documents = []
 pdf_reader = PDFReader()
