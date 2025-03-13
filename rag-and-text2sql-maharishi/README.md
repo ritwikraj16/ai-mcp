@@ -6,7 +6,9 @@ The project builds a LLM powered chatbot that has access to two tools to answer 
 
 LLM will convert user natural language questions to appropriate SQL query or relevant input query for RAG setup to fetch data.
 
-We use (100% local):
+It can use none, either or both tools as per user query.
+
+We use (100% local, no API Key needed for this setup):
 
 |Tech Stack                        |Purpose                                              |
 |----------------------------------|-----------------------------------------------------|
@@ -56,7 +58,7 @@ docker compose up --detach
 
 #### Qdrant
 
-We will be running Qdrant locally in memory so no need for separate setup.
+We will be running Qdrant locally in memory using LlamaIndex so no need for separate setup.
 
 #### Run App
 
@@ -71,11 +73,14 @@ Now run the streamlit application:
 ```python
 streamlit run app.py
 ```
+
+Note: For demostration purpose the query_tools.py file has SQL data for various cities hard-coded and the data/cities folder have pdfs for RAG data. You can modify them or replace the data source as per your requirements.
+
 ---
 
 ## X Thread:
 
-For the task view the draft thread [here](https://typefully.com/t/FDKeDHO)
+For the purpose of task, view the draft thread [here](https://typefully.com/t/FDKeDHO)
 
 ---
 
@@ -88,3 +93,11 @@ For the task view the draft thread [here](https://typefully.com/t/FDKeDHO)
 
 ## Contribution
 Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
+
+
+## Quick Links of the Applicant:
+Adding some links about me for quick access:
+
+[GitHub (130+ stars)](https://github.com/m92vyas) | [LinkedIn](https://www.linkedin.com/in/maharishi-vyas) | [Medium](https://medium.com/@maharishi92vyas)
+
+email: maharishi92vyas@gmail.com
