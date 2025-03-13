@@ -26,7 +26,7 @@ os.environ["OPIK_BASE_URL"] = "http://localhost:5173/api"
 
 ##### Define Ollama LLM #####
 
-Settings.llm = Ollama(model="qwen2.5:0.5b", temperature=0, request_timeout=60.0*5)
+Settings.llm = Ollama(model="qwen2.5:7b", temperature=0, request_timeout=60.0*5)
 
 
 
