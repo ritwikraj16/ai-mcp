@@ -8,13 +8,9 @@ import streamlit as st
 import httpx
 import hashlib
 from dotenv import load_dotenv
-from llama_index.core import SQLDatabase, Settings
+from llama_index.core import Settings
 from llama_index.llms.openai import OpenAI
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer
 from llama_index.indices.managed.llama_cloud import LlamaCloudIndex
-from llama_index.core.tools import QueryEngineTool
-from llama_index.core.query_engine import NLSQLTableQueryEngine
-
 st.set_page_config(page_title="Combining RAG and Text-to-SQL in a Single Query Interface", layout="wide")
 
 # Load API keys
