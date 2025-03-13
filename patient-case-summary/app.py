@@ -197,10 +197,7 @@ col1, col2 = st.columns([6, 1])
 
 with col1:
     st.markdown("""
-    # Patient Case Summary Generator
-    
-    This application analyzes patient data, matches conditions against clinical guidelines, 
-    and generates comprehensive case summaries for clinicians.
+    # Generate Patient Case Summary Powered by OpenAI and LlamaCloud
     """)
 
 with col2:
