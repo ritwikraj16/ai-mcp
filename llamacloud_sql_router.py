@@ -19,11 +19,13 @@ import sys
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-#  Load the model manually
-hf_model = SentenceTransformer("E:/huggingface_models/all-MiniLM-L6-v2")
+import os  
 
-# Use only the model name, not the model itself
-Settings.embed_model = HuggingFaceEmbedding(model_name="E:/huggingface_models/all-MiniLM-L6-v2")
+# Get the model path from an environment variable, defaulting to "all-MiniLM-L6-v2"
+model_path = os.environ.get("MODEL_PATH", "all-MiniLM-L6-v2")  
+
+hf_model = SentenceTransformer(model_path)  
+Settings.embed_model = HuggingFaceEmbedding(model_name=model_path)
 
 # Use Ollama as LLM
 Settings.llm = Ollama(model="mistral", request_timeout=300)
@@ -134,11 +136,17 @@ class RouterOutputAgentWorkflow(Workflow):
 
     @step()
     async def chat(self, ev: InputEvent) -> StopEvent:
-        """Appends msg to chat history and returns response."""
-        chat_res = await self.llm.achat(messages=[ChatMessage(role="user", content=self.chat_history[-1].content)])
-        ai_message = ChatMessage(role="assistant", content=chat_res.message.content)  # ✅ Fix response parsing
-        self.chat_history.append(ai_message)
-        return StopEvent(result=ai_message.content)  # ✅ No tool calls
+        """Retrieve relevant data from SQL or RAG and return a response."""
+
+        query = self.chat_history[-1].content
+
+        # Example logic to choose the right tool
+        if "population" in query or "state" in query:
+            result = sql_tool.run(query)
+        else:
+            result = llama_cloud_tool.run(query)
+
+        return StopEvent(result=result)
 
 
 
