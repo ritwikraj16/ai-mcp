@@ -40,9 +40,13 @@ st.markdown("""
 
 # Run workflow and process query, return result
 async def run_workflow(query):
-    workflow = create_workflow()
-    result = await workflow.run(message=query)
-    return result
+    try:
+        workflow = create_workflow()
+        result = await workflow.run(message=query)
+        return result
+    except Exception as e:
+        st.error(f"Error processing query: {str(e)}")
+        return f"I'm sorry, I encountered an error: {str(e)}"
 
 # Add sidebar for chat history
 with st.sidebar:
@@ -51,8 +55,8 @@ with st.sidebar:
         role = "👤" if message["role"] == "user" else "🤖"
         st.text(f"{role} {message['content']}")
 
-# Display only the 2 most recent question and answer
-if len(st.session_state.messages) >= 1:
+# Display at most only the 2 most recent questions and answers
+if len(st.session_state.messages) >= 2:
     for message in st.session_state.messages[-2:]: 
         with st.chat_message(message["role"]):
             st.write(message["content"])
@@ -71,11 +75,15 @@ if user_query:
     # Display response with a "thinking" message while processsing
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = asyncio.run(run_workflow(user_query))
-        st.write(response)
-
-    # Add response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+            try:
+                response = asyncio.run(run_workflow(user_query))
+                st.write(response)
+                # Add response to chat history
+                st.session_state.messages.append({"role": "assistant", "content": response})
+            except Exception as e:
+                error_msg = f"Error: {str(e)}"
+                st.error(error_msg)
+                st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 # Add "Clear" button for clearing chat
 col1, col2 = st.columns([6, 1])
