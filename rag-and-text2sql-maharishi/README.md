@@ -74,7 +74,7 @@ Now run the streamlit application:
 streamlit run app.py
 ```
 
-Note: For demostration purpose the query_tools.py file has SQL data for various cities hard-coded and the data/cities folder have pdfs for RAG data. You can modify them or replace the data source as per your requirements.
+Note: For this demonstration, the query_tools.py file has SQL data for various cities hard-coded and the data/cities folder has pdfs for RAG data (first two pages of wikipedia articles for those cities). You can modify them or replace the data source as per your requirements.
 
 ---
 
