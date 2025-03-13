@@ -53,6 +53,8 @@ class GenerateCaseSummaryEvent(Event):
 class LogEvent(Event):
     msg: str
     delta: bool = False
+    content_type: str = "text"  # Can be "text", "json", or other formats
+    data: Optional[Dict[str, Any]] = None  # For structured data like JSON
 
 class GuidelineRecommendationWorkflow(Workflow):
     """Guideline recommendation workflow."""
@@ -103,6 +105,12 @@ class GuidelineRecommendationWorkflow(Workflow):
             # save patient info to file
             with open(patient_info_path, "w") as fp:
                 fp.write(patient_info.model_dump_json())
+            if self._verbose:
+                ctx.write_event_to_stream(LogEvent(
+                    msg=f">> Patient Info:",
+                    content_type="json",
+                    data=patient_info.model_dump()
+                ))
         if self._verbose:
             ctx.write_event_to_stream(LogEvent(msg=f">> Patient Info: {patient_info.dict()}"))
 

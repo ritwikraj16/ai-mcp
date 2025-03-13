@@ -9,6 +9,7 @@ from datetime import datetime
 import streamlit as st
 from dotenv import load_dotenv
 from pathlib import Path
+import re  # Add this for regex pattern matching
 
 from llama_index.llms.openai import OpenAI
 from workflow_code.workflow import GuidelineRecommendationWorkflow, LogEvent
@@ -25,7 +26,8 @@ if "id" not in st.session_state:
     st.session_state.case_summary = None
     st.session_state.processing = False
     st.session_state.patient_info = None
-    st.session_state.workflow_logs = ""
+    st.session_state.workflow_logs = []  # Change to list to store structured logs
+    st.session_state.current_log_text = ""  # For plain text display
 
 session_id = st.session_state.id
 
@@ -43,7 +45,8 @@ def reset_session():
     st.session_state.case_summary = None
     st.session_state.processing = False
     st.session_state.patient_info = None
-    st.session_state.workflow_logs = ""
+    st.session_state.workflow_logs = []
+    st.session_state.current_log_text = ""
     gc.collect()
 
 async def process_patient_data(file_path, progress_callback=None):
@@ -92,12 +95,57 @@ async def process_patient_data(file_path, progress_callback=None):
         total_steps = 5  # Approximate number of major steps in the workflow
         current_step = 0
         
+        # Store logs in a structured format
+        logs = []
+        
         async for event in handler.stream_events():
             if isinstance(event, LogEvent):
+                # Process the log message
                 if event.delta:
                     progress_text += event.msg
                 else:
+                    # Add to structured logs with type detection
+                    log_entry = {"text": event.msg}
+                    
+                    # Detect if this contains JSON data
+                    if ">> Patient Info:" in event.msg:
+                        # Extract JSON part
+                        json_match = re.search(r'>> Patient Info: ({.*})', event.msg)
+                        if json_match:
+                            try:
+                                json_data = json.loads(json_match.group(1).replace("'", '"'))
+                                log_entry = {
+                                    "type": "json",
+                                    "title": ">> Patient Info:",
+                                    "data": json_data
+                                }
+                            except:
+                                pass
+                    elif ">> Guideline recommendation:" in event.msg:
+                        # Extract JSON part
+                        json_match = re.search(r'>> Guideline recommendation: ({.*})', event.msg)
+                        if json_match:
+                            try:
+                                json_data = json.loads(json_match.group(1).replace("'", '"'))
+                                log_entry = {
+                                    "type": "json",
+                                    "title": ">> Guideline recommendation:",
+                                    "data": json_data
+                                }
+                            except:
+                                pass
+                    elif ">> Found guidelines:" in event.msg:
+                        # Extract text content
+                        log_entry = {
+                            "type": "code",
+                            "title": ">> Found guidelines:",
+                            "data": event.msg.replace(">> Found guidelines: ", "")
+                        }
+                    
+                    # Add to logs list
+                    logs.append(log_entry)
                     progress_text += event.msg + "\n"
+                    
                     # Update progress based on message content
                     if ">> Reading patient info" in event.msg or ">> Loading patient info" in event.msg:
                         current_step = 1
@@ -115,18 +163,19 @@ async def process_patient_data(file_path, progress_callback=None):
                 progress_percentage = min(int((current_step / total_steps) * 100), 95)
                 
                 if progress_callback:
-                    progress_callback(progress_text, progress_percentage)
+                    progress_callback(progress_text, progress_percentage, logs)
                 else:
                     progress_placeholder.text(progress_text)
                 
-                st.session_state.workflow_logs = progress_text
+                st.session_state.current_log_text = progress_text
+                st.session_state.workflow_logs = logs
         
         # Get results
         response_dict = await handler
         case_summary = response_dict.get("case_summary")
         
         if progress_callback:
-            progress_callback(progress_text + "\nCompleted!", 100)
+            progress_callback(progress_text + "\nCompleted!", 100, logs)
         
         return case_summary
     
@@ -139,7 +188,7 @@ async def process_patient_data(file_path, progress_callback=None):
 
 # Streamlit UI
 st.set_page_config(
-    page_title="Patient Case Summary Generator",
+    page_title="Generate Patient Case Report Powered by OpenAI and LlamaCloud",
     page_icon="🏥",
     layout="wide"
 )
@@ -200,9 +249,12 @@ with st.sidebar:
                     status_text = st.empty()
                     
                     # Define callback for progress updates
-                    def update_progress(msg, percentage):
+                    def update_progress(msg, percentage, logs=None):
                         status_text.text(msg)
                         progress_bar.progress(percentage)
+                        if logs:
+                            st.session_state.workflow_logs = logs
+                            st.session_state.current_log_text = msg
                     
                     with st.spinner("Processing patient data..."):
                         # Run the processing asynchronously
@@ -220,10 +272,29 @@ with st.sidebar:
             st.error(f"An error occurred: {str(e)}")
             st.stop()
     
-    # Display workflow logs in an expander
+    # Display workflow logs in an expander with better formatting
     if st.session_state.workflow_logs:
         with st.expander("Workflow Logs", expanded=False):
-            st.text(st.session_state.workflow_logs)
+            # Add a toggle for view mode
+            view_mode = st.radio("View mode:", ["Formatted", "Plain Text"], horizontal=True)
+            
+            if view_mode == "Formatted":
+                for log in st.session_state.workflow_logs:
+                    if isinstance(log, dict) and "type" in log:
+                        if log["type"] == "json":
+                            st.markdown(f"**{log.get('title', '')}**")
+                            st.json(log["data"])
+                        elif log["type"] == "code":
+                            st.markdown(f"**{log.get('title', '')}**")
+                            st.code(log["data"])
+                        else:
+                            st.text(log.get("text", ""))
+                    else:
+                        # Fallback for simple text logs
+                        st.text(log.get("text", str(log)))
+            else:
+                # Plain text view
+                st.text(st.session_state.current_log_text)
 
 # Main content area
 if st.session_state.patient_info:
