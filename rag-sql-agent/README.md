@@ -18,6 +18,8 @@ You can also watch the full video on YouTube:
 
 [Watch Full Video](https://youtu.be/etlCp9kqg8Y)
 
+[Typefully Draft](https://typefully.com/preview/x/GtkzPoB)
+
 ## Directory structure
 ```
 .
