@@ -32,7 +32,7 @@ def display_message(message: Dict[str, Any]):
     Display a single chat message with appropriate styling.
     
     Args:
-        message: Message dictionary containing role, content, and optional metadata
+        message: Message dictionary containing role and content
     """
     role = message["role"]
     content = message["content"]
@@ -40,24 +40,6 @@ def display_message(message: Dict[str, Any]):
     # Use Streamlit's native chat_message component
     with st.chat_message(role):
         st.markdown(content)
-        
-        # Display tool information if available
-        if role == "assistant" and "tool_used" in message:
-            tool_used = message["tool_used"]
-            st.caption(f"Tool used: {tool_used}")
-        
-        # Display SQL query if available
-        if role == "assistant" and "sql_query" in message:
-            sql_query = message["sql_query"]
-            with st.expander("View SQL Query"):
-                st.code(sql_query, language="sql")
-        
-        # Display RAG sources if available
-        if role == "assistant" and "rag_sources" in message:
-            rag_sources = message["rag_sources"]
-            with st.expander("View Sources"):
-                for source in rag_sources:
-                    st.markdown(f"- {source}")
 
 def add_user_message(message: str):
     """
@@ -68,18 +50,14 @@ def add_user_message(message: str):
     """
     st.session_state.messages.append({"role": "user", "content": message})
 
-def add_assistant_message(message: str, metadata: Optional[Dict[str, Any]] = None):
+def add_assistant_message(message: str):
     """
     Add an assistant message to the chat history.
     
     Args:
         message: The assistant's message content
-        metadata: Optional metadata like tool used, SQL query, or RAG sources
     """
     assistant_message = {"role": "assistant", "content": message}
-    if metadata:
-        assistant_message.update(metadata)
-    
     st.session_state.messages.append(assistant_message)
 
 def chat_input_area(on_submit: Callable[[str], None]):

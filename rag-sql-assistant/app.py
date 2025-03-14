@@ -56,7 +56,7 @@ def process_query(query: str) -> Dict[str, Any]:
         query: The user's query string
         
     Returns:
-        Dictionary with response content and metadata
+        Dictionary with response content
     """
     try:
         # Create tools
@@ -78,42 +78,13 @@ def process_query(query: str) -> Dict[str, Any]:
         # Run the async function in a new event loop
         result = asyncio.run(run_workflow())
         
-        # Get metadata about which tool was used
-        workflow_metadata = {
-            "tool_used": "RAG" if "RAG" in str(result) else "SQL"
-        }
-        
-        # If SQL was used, extract the query
-        if workflow_metadata["tool_used"] == "SQL":
-            # Try to extract SQL query from result
-            import re
-            sql_match = re.search(r"```sql\n(.*?)\n```", str(result), re.DOTALL)
-            if sql_match:
-                workflow_metadata["sql_query"] = sql_match.group(1)
-            else:
-                # Fallback to a simpler pattern
-                sql_match = re.search(r"SQL query: (.*?)(?:\n|$)", str(result), re.DOTALL)
-                if sql_match:
-                    workflow_metadata["sql_query"] = sql_match.group(1)
-        
-        # If RAG was used, extract sources if available
-        elif workflow_metadata["tool_used"] == "RAG":
-            # Try to extract sources
-            import re
-            sources_match = re.search(r"Sources:\n(.*?)(?:\n\n|$)", str(result), re.DOTALL)
-            if sources_match:
-                sources_text = sources_match.group(1)
-                workflow_metadata["rag_sources"] = [s.strip() for s in sources_text.split("\n") if s.strip()]
-            
         return {
-            "content": result,
-            "metadata": workflow_metadata
+            "content": result
         }
     except Exception as e:
         logger.exception(f"Error processing query: {e}")
         return {
-            "content": f"I encountered an error processing your query: {str(e)}",
-            "metadata": {"error": str(e)}
+            "content": f"I encountered an error processing your query: {str(e)}"
         }
 
 # Sidebar
@@ -202,24 +173,6 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        
-        # Display tool information if available
-        if message["role"] == "assistant" and "metadata" in message and "tool_used" in message["metadata"]:
-            tool_used = message["metadata"]["tool_used"]
-            st.caption(f"Tool used: {tool_used}")
-        
-        # Display SQL query if available
-        if message["role"] == "assistant" and "metadata" in message and "sql_query" in message["metadata"]:
-            sql_query = message["metadata"]["sql_query"]
-            with st.expander("View SQL Query"):
-                st.code(sql_query, language="sql")
-        
-        # Display RAG sources if available
-        if message["role"] == "assistant" and "metadata" in message and "rag_sources" in message["metadata"]:
-            rag_sources = message["metadata"]["rag_sources"]
-            with st.expander("View Sources"):
-                for source in rag_sources:
-                    st.markdown(f"- {source}")
 
 # Accept user input
 if prompt := st.chat_input("Ask a question using natural language..."):
@@ -232,23 +185,16 @@ if prompt := st.chat_input("Ask a question using natural language..."):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-        
         with st.spinner("Processing your query..."):
             # Process the query
             response = process_query(prompt)
             full_response = str(response["content"])
             
-        # Display the response with streaming-like effect for better user experience
-        message_placeholder.markdown(full_response + "▌")
-        import time
-        time.sleep(0.1)  # Brief pause for visual effect
-        message_placeholder.markdown(full_response)
+            # Display the response directly
+            st.markdown(full_response)
         
-        # Add assistant response to chat history with metadata
+        # Add assistant response to chat history
         st.session_state.messages.append({
             "role": "assistant", 
-            "content": full_response,
-            "metadata": response["metadata"]
+            "content": full_response
         })
