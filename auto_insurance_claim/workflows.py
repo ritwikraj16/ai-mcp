@@ -124,7 +124,11 @@ class AutoInsuranceWorkflow(Workflow):
             st.info("Finalizing Decision")
         claim_info = await ctx.get("claim_info")
         rec = ev.recommendation
-        covered = "covered" in rec.recommendation_summary.lower() or (rec.settlement_amount is not None and rec.settlement_amount > 0)
+        summary_lower = rec.recommendation_summary.lower()
+        covered = (
+            ("covered" in summary_lower and "not covered" not in summary_lower)
+            or (rec.settlement_amount is not None and rec.settlement_amount > 0)
+        )
         deductible = rec.deductible if rec.deductible is not None else 0.0
         recommended_payout = rec.settlement_amount if rec.settlement_amount else 0.0
         decision = ClaimDecision(

@@ -3,14 +3,14 @@ import nest_asyncio
 nest_asyncio.apply()
 from typing import List, Optional
 from pydantic import BaseModel, Field
-
+from datetime import date
 
 class ClaimInfo(BaseModel):
     """Extracted Insurance claim information."""
     claim_number: str
     policy_number: str
     claimant_name: str
-    date_of_loss: str
+    date_of_loss: date
     loss_description: str
     estimated_repair_cost: float
     vehicle_details: Optional[str] = None

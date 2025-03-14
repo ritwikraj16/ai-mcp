@@ -74,8 +74,9 @@ OPIK_PROJECT_NAME=your_opik_project_name
 ```
 
 ## Usage
-1. Ensure you have Ollama LLM running locally. Check out the installation here;
-<a> https://github.com/ollama/ollama</a>
+1. Ensure you have Ollama LLM running locally. Check out the installation 
+[here](https://github.com/ollama/ollama).
+
 
 2. Start the Streamlit application:
 ```bash

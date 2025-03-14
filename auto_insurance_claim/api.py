@@ -10,6 +10,16 @@ load_dotenv()
 # Llama cloud 
 llama_cloud_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
 org_id = os.getenv("ORGANIZATION_ID")
+# Llama cloud 
+llama_cloud_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
+org_id = os.getenv("ORGANIZATION_ID")
+
+if not llama_cloud_api_key:
+    raise ValueError("LLAMA_CLOUD_API_KEY environment variable is required")
+
+org_id = os.getenv("ORGANIZATION_ID")
+if not org_id:
+    raise ValueError("ORGANIZATION_ID environment variable is required")
 
 def policy_index(): 
     index = LlamaCloudIndex(

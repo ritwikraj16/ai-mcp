@@ -50,12 +50,6 @@ async def main():
         claim_data = json.loads(claim_file.read().decode())
         
         st.success("Files uploaded successfully!")
-        
-        # # Display policy information
-        # st.subheader("Policy Information")
-        # with st.expander("View Policy Details"):
-        #     st.markdown(policy_content)
-
         # Display claim information
         st.subheader("Claim Information")
         with st.expander("View Claim Details"):
