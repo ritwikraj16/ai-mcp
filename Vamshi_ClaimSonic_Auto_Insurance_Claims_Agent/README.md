@@ -1,13 +1,16 @@
-<br />
-<div align="center">
-  <h1 align="center">ClaimSonic: Auto Claim Agent 🚗</h1>
+<h1 align="center">ClaimSonic: Auto Claim Agent 🚗</h1>
+  <p align="center">
+    ClaimSonic is an intelligent auto insurance claim processing application designed to streamline claim assessments. Leveraging advanced technologies such as LlamaIndex, OpenAI GPT-4o, and Streamlit, this project automates the extraction of claim details, retrieval of relevant policy documents, and generation of claim recommendations. The goal is to support claim adjusters by providing accurate, data-driven decision insights quickly. 
+ <br>
+     <br />
+    <a href="https://github.com/vamshi694/"><strong>Explore the repo »</strong></a>
+    <br />
+    <br />
+    <a href="https://www.youtube.com/watch?v=oKSzV4b5e1g">View Demo</a> 
+    ·
+    <a href="https://typefully.com/t/sjcCzxz">View Tweet</a>
+  </p>
 </div>
-
-ClaimSonic is an intelligent auto insurance claim processing application designed to streamline claim assessments. Leveraging advanced technologies such as LlamaIndex, OpenAI GPT-4o, and Streamlit, this project automates the extraction of claim details, retrieval of relevant policy documents, and generation of claim recommendations. The goal is to support claim adjusters by providing accurate, data-driven decision insights quickly.
-
-A demo is shown below:
-
-[Video demo](https://youtu.be/oKSzV4b5e1g)
 
 --- 
 
