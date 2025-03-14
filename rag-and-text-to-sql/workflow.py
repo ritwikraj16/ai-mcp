@@ -1,6 +1,6 @@
 # Required imports
 from typing import Dict, List, Any, Optional
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.ollama import Ollama
 from llama_index.core.tools import BaseTool
 from llama_index.core.llms import ChatMessage
 from llama_index.core.llms.llm import ToolSelection, LLM
@@ -59,7 +59,7 @@ class RouterOutputAgentWorkflow(Workflow):
         self.tools_dict: Optional[Dict[str, BaseTool]] = {
             tool.metadata.name: tool for tool in self.tools
         }
-        self.llm: LLM = llm or OpenAI(temperature=0, model="gpt-4o-mini")
+        self.llm: LLM = llm or Ollama(temperature=0, model="mistral")
         self.chat_history: List[ChatMessage] = chat_history or []
 
     def reset(self) -> None:
