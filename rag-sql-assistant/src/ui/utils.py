@@ -11,7 +11,7 @@ from typing import List
 
 def stream_text_with_cursor(text: str):
     """
-    Stream text with a red cursor effect.
+    Stream text with a red cursor effect while preserving markdown formatting.
     
     Args:
         text: The text to stream
@@ -19,20 +19,24 @@ def stream_text_with_cursor(text: str):
     # Create a placeholder for the streaming text
     placeholder = st.empty()
     
-    # Split the text into words
-    words = text.split()
+    # Stream the text character by character or in chunks to preserve markdown
     displayed_text = ""
     
-    # Stream each word with a random delay
-    for i, word in enumerate(words):
-        # Add the word to the displayed text
-        displayed_text += word + " "
+    # Define the chunk size for streaming (adjust for better performance)
+    chunk_size = 3  # Stream a few characters at a time
+    
+    for i in range(0, len(text), chunk_size):
+        # Get the next chunk of text
+        chunk = text[i:i+chunk_size]
+        
+        # Add the chunk to the displayed text
+        displayed_text += chunk
         
         # Display text with red cursor
-        placeholder.markdown(f"{displayed_text}**<span style='color:red; font-size:1.25em; font-weight:bold;'>|</span>**", unsafe_allow_html=True)
+        placeholder.markdown(f"{displayed_text}<span style='color:red; font-size:1.25em; font-weight:bold;'>|</span>", unsafe_allow_html=True)
         
-        # Small random delay between words (0.01 to 0.05 seconds)
-        time.sleep(random.uniform(0.02, 0.1))
+        # Small random delay between chunks (0.01 to 0.05 seconds)
+        time.sleep(random.uniform(0.01, 0.05))
     
     # Final text without cursor
     placeholder.markdown(displayed_text)
