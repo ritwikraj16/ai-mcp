@@ -85,3 +85,35 @@ def get_all_tools(city_stats_db: CityStatsDB, llama_cloud_rag: LlamaCloudRAG) ->
     rag_tool = get_rag_tool(llama_cloud_rag)
     
     return [sql_tool, rag_tool]
+
+
+def create_sql_tool() -> QueryEngineTool:
+    """
+    Create a QueryEngineTool for SQL queries with default configuration.
+    
+    This function initializes a CityStatsDB instance and uses it to create an SQL tool.
+    
+    Returns:
+        QueryEngineTool: Tool for executing SQL queries
+    """
+    # Initialize the database with default settings
+    city_stats_db = CityStatsDB()
+    
+    # Create and return the SQL tool
+    return get_sql_tool(city_stats_db)
+
+
+def create_rag_tool() -> QueryEngineTool:
+    """
+    Create a QueryEngineTool for RAG queries with default configuration.
+    
+    This function initializes a LlamaCloudRAG instance and uses it to create a RAG tool.
+    
+    Returns:
+        QueryEngineTool: Tool for executing RAG queries
+    """
+    # Initialize the RAG system with default settings
+    llama_cloud_rag = LlamaCloudRAG()
+    
+    # Create and return the RAG tool
+    return get_rag_tool(llama_cloud_rag)
