@@ -2,7 +2,7 @@ import streamlit as st
 import uuid
 import asyncio
 import gc
-from backend import process_query  # Import your query handling function
+from rag import process_query  # Import your query handling function
 
 st.title("🧠 RAG + Text-to-SQL Interface")
 
