@@ -17,7 +17,7 @@ This project showcases a custom agent using either a vector index for RAG or a S
 
 ## Project Structure
 
-```
+```plaintext
 project/
 │── sql_data.py         # SQL database population script
 │── tools.py            # Both SQL and RAG query handling tools
@@ -34,12 +34,17 @@ project/
 
 - Docker for Qdrant (verify with `docker info`)
 - Python 3.11 or later
-- OpenAI API key
+- Ollama for local LLM inference
 - Comet ML API key
 
-**Setup OpenAI**:
+**Setup Ollama**:
 
-Get an API key from [OpenAI](https://platform.openai.com/api-keys) and set it in the Streamlit UI.
+See [Ollama Installation](https://ollama.com/download) for details on setting up the local LLM inference tool.
+Pull the Mistral model using:
+
+```bash
+ollama pull mistral
+```
 
 **Setup Opik**:
 
@@ -65,7 +70,8 @@ docker run -p 6333:6333 -v .:/qdrant/storage qdrant/qdrant
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # MacOS/Linux
 ```
 
 2. Install the required packages:
@@ -91,7 +97,7 @@ streamlit run app.py
 ## How to Use
 
 1. Open the Streamlit UI in your browser (usually at `http://localhost:8501`).
-2. Set your OpenAI API key in the UI to enable RAG + Text-to-SQL capabilities.
+2. Upload documents for access by the RAG system.
 3. Enter your queries in natural language, such as:
    - "What is the population of Chicago?"
    - "What Native American tribe originally inhabited the Miami area?"
@@ -117,9 +123,9 @@ streamlit run app.py
    - Verify Docker is running
    - Check if the container is accessible on port 6333
 
-2. **API Authentication Errors**:
-   - Ensure API keys are correctly set in the UI
-   - Verify API quota availability
+2. **Ollama Connection Errors**:
+   - Ensure Ollama is running and accessible
+   - Verify the Mistral model is available
 
 ---
 
