@@ -15,7 +15,8 @@ from typing import Dict, List, Any, Optional
 from sentence_transformers import SentenceTransformer
 import asyncio
 import sys
-
+  
+  
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
@@ -28,7 +29,14 @@ hf_model = SentenceTransformer(model_path)
 Settings.embed_model = HuggingFaceEmbedding(model_name=model_path)
 
 # Use Ollama as LLM
-Settings.llm = Ollama(model="mistral", request_timeout=300)
+
+try:
+    Settings.llm = Ollama(model="mistral", request_timeout=300)
+    print("✅ Ollama model loaded successfully!")
+except Exception as e:
+    print(f"❌ Error loading Ollama model: {e}")
+    print("Make sure Ollama is running and the mistral model is available.")
+    sys.exit(1)
 
 print("✅ Model Loaded Successfully!")
 
@@ -56,19 +64,19 @@ rows = [
     {"city_name": "Miami", "population": 449514, "state": "Florida"},
     {"city_name": "Seattle", "population": 749256, "state": "Washington"},
 ]
-for row in rows:
-    stmt = insert(city_stats_table).values(**row)
-    with engine.begin() as connection:
-        connection.execute(stmt)
+with engine.begin() as connection:
+    connection.execute(insert(city_stats_table), rows)
+
 
 # SQL Query Engine
 sql_database = SQLDatabase(engine, include_tables=["city_stats"])
-sql_query_engine = NLSQLTableQueryEngine(sql_database=sql_database, tables=["city_stats"])
+sql_query_engine = NLSQLTableQueryEngine(sql_database=sql_database, tables=["city_stats"]) 
 
-import os  
+
 
 # Get PDF folder path from environment variable, default to "data"
 pdf_files_env = os.environ.get("PDF_FILES_PATH", "data")
+
 
 # Construct file paths dynamically
 pdf_files = [
@@ -80,7 +88,14 @@ pdf_files = [
 documents = []
 pdf_reader = PDFReader()
 for pdf in pdf_files:
-    documents.extend(pdf_reader.load_data(pdf))
+    try:
+        if os.path.exists(pdf):
+            print(f"Loading PDF: {pdf}")
+            documents.extend(pdf_reader.load_data(pdf))
+        else:
+            print(f"⚠️ Warning: PDF file not found: {pdf}")
+    except Exception as e:
+        print(f"❌ Error loading PDF {pdf}: {e}")
 
 # Create Local Vector Index
 index = VectorStoreIndex.from_documents(documents, embed_model=Settings.embed_model)
@@ -142,19 +157,19 @@ class RouterOutputAgentWorkflow(Workflow):
 
         # Example logic to choose the right tool
         if "population" in query or "state" in query:
-            result = sql_tool.run(query)
+             result = self.tools_dict["sql_tool"].run(query)
         else:
-            result = llama_cloud_tool.run(query)
-
-        return StopEvent(result=result)
+             result = self.tools_dict["llama_cloud_tool"].run(query)
 
 
 
 # Create the Workflow
-wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=True,timeout = 600)
+verbose = os.environ.get("VERBOSE", "False").lower() == "true"
+
+wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
 
 # Example Queries
-import asyncio
+
 
 async def main():
     queries = [
@@ -166,8 +181,12 @@ async def main():
     ]
 
     for query in queries:
-        result = await wf.run(message=query)
-        print(result)
+            try:
+                print(f"\nProcessing query: '{query}'")
+                result = await wf.run(message=query)
+                print(f"Result: {result}")
+            except Exception as e:
+                print(f"❌ Error processing query '{query}': {e}")
 
 # Run the main function properly
 if __name__ == "__main__":
