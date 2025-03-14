@@ -13,11 +13,16 @@ tab1, tab2 = st.tabs(["Process File", "Manual Entry"])
 with tab1:
     st.header("Process Claim from JSON File")
     
-    # File uploader
+    # File uploader section with its own button
+    st.subheader("Upload a claim file")
     uploaded_file = st.file_uploader("Upload a claim JSON file", type=["json"])
+    process_uploaded = st.button("Process Uploaded File", key="process_uploaded", disabled=uploaded_file is None)
     
-    # Sample files section
-    st.subheader("Or use a sample file:")
+    # Add some space between sections
+    st.markdown("---")
+    
+    # Sample files section with its own button
+    st.subheader("Or use a sample file")
     sample_files = []
     
     # Check for sample files in the data directory
@@ -26,17 +31,14 @@ with tab1:
     
     if sample_files:
         selected_sample = st.selectbox("Select a sample claim", sample_files)
-        use_sample = st.button("Use Selected Sample")
+        use_sample = st.button("Process Selected Sample", key="use_sample")
     else:
         st.warning("No sample files found in 'data' directory.")
         use_sample = False
         selected_sample = None
     
-    # Process button
-    process_file = st.button("Process Claim", key="process_file")
-    
-    # Handle file processing
-    if process_file and uploaded_file is not None:
+    # Handle file processing for uploaded file
+    if process_uploaded and uploaded_file is not None:
         # Save uploaded file temporarily
         with open("temp_claim.json", "wb") as f:
             f.write(uploaded_file.getbuffer())
@@ -63,6 +65,7 @@ with tab1:
             if os.path.exists("temp_claim.json"):
                 os.remove("temp_claim.json")
     
+    # Handle sample file processing
     elif use_sample and selected_sample:
         sample_path = os.path.join("data", selected_sample)
         
