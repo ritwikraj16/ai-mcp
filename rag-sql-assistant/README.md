@@ -29,10 +29,6 @@ For a detailed explanation of this project, check out this Twitter thread:
 
 ![Architecture](assets/architecture.png)
 
-### Demo
-
-<insert demo video or GIF here>
-
 ## ✨ Features
 
 - 🧠 **Intelligent Query Routing**: Automatically determines whether to use RAG or SQL based on query type
