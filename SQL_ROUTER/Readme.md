@@ -50,3 +50,9 @@ A question-answering app combining SQL queries and document retrieval to provide
 - [Groq](https://groq.com)
 - [Streamlit](https://streamlit.io)
 - [HuggingFace](https://huggingface.co/)
+
+## Typefully Draft Link
+
+This section is provides you the typefully draft llink for the set of twitter posts I have created as given in the task .
+
+- [Draft Link ](https://typefully.com/t/rs9pLhH)
