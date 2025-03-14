@@ -58,7 +58,3 @@ class LlamaCloudRAG:
             Any: The response from the query engine
         """
         return self.query_engine.query(query_text)
-
-if __name__ == "__main__":
-    rag = LlamaCloudRAG()
-    print(rag.query("What is the capital of the United States?"))
