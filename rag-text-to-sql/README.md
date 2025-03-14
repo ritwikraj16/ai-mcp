@@ -67,7 +67,7 @@ streamlit run app.py(use when creating index using api) or app1.py(use when crea
 
 - **Tech Stack 🛠️**
   Python (Streamlit, SQLAlchemy)
-  LlamaIndex (RAG, LLM agent)
+  LlamaIndex (RAG, LLM agent) for Orchestration.
   Ollama (for LLM-based responses)
   SQLite (in-memory database)
 
