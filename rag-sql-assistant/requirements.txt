@@ -1,0 +1,8 @@
+llama-index-core>=0.10.8
+llama-index-llms-openai>=0.1.1
+llama-index-indices-managed-llama-cloud>=0.1.1
+sqlalchemy>=2.0.0
+openai>=1.0.0
+nest-asyncio>=1.5.6
+streamlit>=1.27.2
+python-dotenv>=1.0.0
