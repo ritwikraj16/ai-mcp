@@ -1,6 +1,7 @@
 # Patient Case Summarizer using LLamaCloud
 
 The Patient Case Summary Generator is a Streamlit app that lets healthcare professionals upload patient JSON data to create concise AI-generated summaries. It uses medical guidelines to detail conditions, encounters, and recommendations.
+
 We use:
 - LLamaCloudIndex for medical guideline retrieval
 - OpenAI for processing patient data and generating case summary
@@ -13,7 +14,10 @@ A demo is shown here:
 
 **Setup LlamaCloud**:
 
-Get an API key from [LLamaCloud](https://cloud.llamaindex.ai/) and set it in the `.env` file as follows:
+1. SignUp to LLamaCloud
+2. Upload sample medical guidelines
+3. Create an index
+4. Get an API key from [LLamaCloud](https://cloud.llamaindex.ai/) and set it in the `.env` file as follows:
 
 ```bash
 LLAMA_CLOUD_API_KEY=<YOUR_API_KEY> 
@@ -28,6 +32,8 @@ OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
 ```
 
 **Install Dependencies**:
+
+Ensure you have Python 3.11 or later installed
    ```bash
    pip install streamlit llama_index pydantic
    ```
