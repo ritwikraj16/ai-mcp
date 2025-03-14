@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Get the model path from an environment variable, defaulting to "all-MiniLM-L6-v2"
-model_path = os.environ.get("MODEL_PATH", "all-MiniLM-L6-v2")
+# Get the model path from an environment variable, defaulting to "sentence-transformers/all-MiniLM-L6-v2"
+model_path = os.environ.get("MODEL_PATH", "sentence-transformers/all-MiniLM-L6-v2")
 
 hf_model = SentenceTransformer(model_path)
 Settings.embed_model = HuggingFaceEmbedding(model_name=model_path)
@@ -68,9 +68,8 @@ engine = create_engine("sqlite:///:memory:", future=True)
 metadata_obj = MetaData()
 
 # Create city SQL table
-table_name = "city_stats"
 city_stats_table = Table(
-    table_name,
+    "city_stats",
     metadata_obj,
     Column("city_name", String(16), primary_key=True),
     Column("population", Integer),
@@ -136,19 +135,6 @@ llama_cloud_tool = QueryEngineTool.from_defaults(query_engine=llama_cloud_query_
 class InputEvent(Event):
     """Event representing user input."""
 
-class GatherToolsEvent(Event):
-    """Event representing tool gathering."""
-    tool_calls: Any
-
-class ToolCallEvent(Event):
-    """Event representing a tool call."""
-    tool_call: Any
-
-class ToolCallEventResult(Event):
-    """Event representing a tool call result."""
-    msg: ChatMessage
-
-# Custom Agent Workflow
 # Custom Agent Workflow
 class RouterOutputAgentWorkflow(Workflow):
     """Custom router output agent workflow."""
@@ -162,8 +148,13 @@ class RouterOutputAgentWorkflow(Workflow):
         self.chat_history = []
 
     @step()
-    async def chat(self, ev: InputEvent) -> StopEvent:
+    async def chat(self, ev: StartEvent) -> StopEvent:
         """Retrieve relevant data from SQL or RAG and return a response."""
+        
+        # Ensure chat history is not empty
+        if not self.chat_history:
+            self.chat_history.append(ChatMessage(role="user", content=ev.message))
+
         query = self.chat_history[-1].content
 
         if "population" in query or "state" in query:
@@ -175,7 +166,7 @@ class RouterOutputAgentWorkflow(Workflow):
         self.chat_history.append(ChatMessage(role="assistant", content=result))
         return StopEvent(result=result)
 
-# Create the Workflow
+# Create and run the Workflow
 verbose = os.environ.get("VERBOSE", "False").lower() == "true"
 wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
 
@@ -193,7 +184,7 @@ async def main():
     logger.info("\n--- Starting conversation example ---")
     for query in queries:
         try:
-            result = await wf.run(message=query)
+            result = await wf.run(StartEvent(message=query))
             logger.info(f"User: {query}\nAssistant: {result}")
         except Exception as e:
             logger.error(f"❌ Error processing query '{query}': {e}")
