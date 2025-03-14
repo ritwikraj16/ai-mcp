@@ -2,7 +2,6 @@ import streamlit as st
 import asyncio
 import os
 from pathlib import Path
-from llama_index.llms.openai import OpenAI
 from patient_case_summary import GuidelineRecommendationWorkflow, retriever, LogEvent
 from llama_index.llms.ollama import Ollama
 
@@ -25,11 +24,16 @@ st.markdown("""
         margin-top: 20px;
     }
     .summary-box {
+        background-color: #1e1e1e;
+        color: #ffffff;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        white-space: pre-wrap;
         font-family: 'Courier New', Courier, monospace;
+        font-size: 16px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        border: 1px solid #444;
     }
     .stButton>button {
         background-color: #3498db;
@@ -41,6 +45,24 @@ st.markdown("""
     }
     .stButton>button:hover {
         background-color: #2980b9;
+    }
+    
+    .table-style {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 10px;
+    }
+    
+            .table-style th, .table-style td {
+        padding: 10px;
+        border: 1px solid #444;
+        text-align: left;
+        font-size: 18px;
+    }
+    
+    .table-style th {
+        background-color: #2596be;
+        color: white;
     }
     .description {
         font-size: 20px;
@@ -56,19 +78,6 @@ st.markdown("""
 st.markdown('<div class="main-title">🏥 Patient Case Summary Generator</div>', unsafe_allow_html=True)
 # Sidebar for instructions and branding
 with st.sidebar:
-    st.markdown("### How to Use")
-    st.markdown("""
-    1. Upload a patient JSON file.
-    2. Click 'Generate Summary' to process the data.
-    3. View the formatted patient summary.
-    """)
-    st.markdown("---")
-    st.markdown("Powered by Ollama & Streamlit")
-
-# Main content area
-col1, col2 = st.columns([2, 1])  # Two-column layout
-
-with col2:
     # File upload with a nicer label
     st.markdown("#### Upload Patient Data")
     uploaded_file = st.file_uploader("Choose a patient JSON file", type=["json"], help="Upload a Synthea-generated FHIR JSON file.")
@@ -82,6 +91,19 @@ with col2:
     else:
         patient_json_path = None
 
+# Main content area
+col1, col2 = st.columns([4, 1])  # Two-column layout
+
+with col2:
+    st.markdown("### How to Use")
+    st.markdown("""
+    1. Upload a patient JSON file.
+    2. Click 'Generate Summary' to process the data.
+    3. View the formatted patient summary.
+    """)
+    st.markdown("---")
+    st.markdown("Powered by Ollama & LLamaCloud")
+
 with col1:
     st.markdown('<div class="description">The Patient Case Summary Generator is a Streamlit app that lets healthcare professionals upload patient JSON data to create concise AI-generated summaries. It uses medical guidelines to detail conditions, encounters, and recommendations.</div>', unsafe_allow_html=True)
     # Button with progress feedback
@@ -93,7 +115,7 @@ with col1:
         else:
             with st.spinner("Processing patient data..."):
                 # Initialize the workflow
-                llm = OpenAI(model="gpt-4o")
+                llm = Ollama(model="deepseek-r1:7b", base_url="http://localhost:11434")
                 workflow = GuidelineRecommendationWorkflow(
                     guideline_retriever=retriever,
                     llm=llm,
@@ -110,13 +132,45 @@ with col1:
                 # Run the workflow and display results
                 try:
                     case_summary = asyncio.run(run_workflow())
-                    
-                    # Display the summary in a styled box
-                    st.markdown('<div class="subheader">Patient Summary</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="summary-box">{case_summary.render()}</div>', unsafe_allow_html=True)
-                
+
+                    name = getattr(case_summary, "patient_name", "Unknown")
+                    age = getattr(case_summary, "patient_age", "Unknown")
+                    condition_summary_raw = case_summary.render().strip()
+                    condition_summary = condition_summary_raw.replace(name, "").replace(str(age), "").strip()
+
+                    st.subheader("Patient Details")
+                    st.markdown(
+                        f"""
+                        <table style="width: 95%; border-collapse: collapse; text-align: left;">
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; background-color: #333c3d;">Attribute</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background-color: #333c3d;">Value</th>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Name</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">{name}</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Age</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">{age}</td>
+                            </tr>
+                        </table>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+                    st.subheader("Condition Summary")
+                    st.markdown(
+                        f"""
+                        <div style="max-height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #333c3d; width: 95%">
+                            <pre>{condition_summary_raw}</pre>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
                 except Exception as e:
-                    st.error(f"Error: {str(e)}", icon="❌")
+                    st.error(f"❌ Error: {str(e)}")
 
 
 
