@@ -9,6 +9,7 @@ from llama_index.core.workflow import (
 from llama_index.core.prompts import ChatPromptTemplate
 from llama_index.core.retrievers import BaseRetriever
 import streamlit as st 
+import json
 from prompts import POLICY_RECOMMENDATION_PROMPT,\
     GENERATE_POLICY_QUERIES_PROMPT
 from schema import ClaimInfo, PolicyQueries, PolicyRecommendation, ClaimDecision    
@@ -36,12 +37,23 @@ class LogEvent(Event):
 
 
 def parse_claim(file_path: str) -> ClaimInfo:
-    import json
+    
     with open(file_path, "r") as f:
         data = json.load(f)
     return ClaimInfo.model_validate(data)  # replace "ClaimInfo".model_validate with actual ClaimInfo class method
 
 class AutoInsuranceWorkflow(Workflow):
+    """
+    Workflow for processing auto insurance claims.
+    
+    This workflow handles the entire lifecycle of an auto insurance claim:
+    1. Loading claim information from a JSON file
+    2. Generating policy queries based on the claim
+    3. Retrieving relevant policy text
+    4. Generating policy recommendations
+    5. Finalizing the claim decision
+    6. Outputting the result
+    """
     def __init__(
         self, 
         policy_retriever: BaseRetriever, 
@@ -51,6 +63,7 @@ class AutoInsuranceWorkflow(Workflow):
         super().__init__(**kwargs)
         self.policy_retriever = policy_retriever
         self.llm = llm 
+            
     @step
     async def load_claim_info(self, ctx: Context, ev: StartEvent) -> ClaimInfoEvent:
         if self._verbose:
@@ -81,10 +94,8 @@ class AutoInsuranceWorkflow(Workflow):
         for query in ev.queries.queries:
             if self._verbose:
                 ctx.write_event_to_stream(LogEvent(msg=f">> Query: {query}"))
-            # fetch policy text
             retriever = self.policy_retriever.as_retriever()
             docs = await retriever.aretrieve(query)
-            # docs = await self.policy_retriever.aretrieve(query)
             for d in docs:
                 combined_docs[d.id_] = d
 
