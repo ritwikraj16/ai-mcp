@@ -124,6 +124,7 @@ def render_main_ui(process_query_func):
         process_query_func: Function to process user queries
     """
     from src.ui.chat import initialize_chat_state, display_chat_history, add_user_message, add_assistant_message
+    from src.ui.utils import stream_text_with_cursor
     
     # Initialize chat state
     initialize_chat_state()
@@ -147,8 +148,8 @@ def render_main_ui(process_query_func):
                 response = process_query_func(prompt)
                 full_response = str(response["content"])
                 
-                # Display the response directly
-                st.markdown(full_response)
+                # Display the response with streaming effect and red cursor
+                stream_text_with_cursor(full_response)
             
             # Add assistant response to chat history
-            add_assistant_message(full_response) 
+            add_assistant_message(full_response)

@@ -26,6 +26,10 @@ from src.ui.explainer import (
     render_about_section
 )
 
+from src.ui.utils import (
+    stream_text_with_cursor
+)
+
 __all__ = [
     # Chat UI
     "initialize_chat_state",
@@ -44,5 +48,8 @@ __all__ = [
     
     # Explainer UI
     "render_explainer_section",
-    "render_about_section"
+    "render_about_section",
+    
+    # UI Utilities
+    "stream_text_with_cursor"
 ]
