@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """llamacloud_sql_router.py"""
 
-
 # Standard library imports
 import asyncio
 import os
 import sys
-import time
+import logging
 
-# Import necessary libraries
+# Third-party imports
+from sentence_transformers import SentenceTransformer
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama  
 from llama_index.core import VectorStoreIndex, Settings, SQLDatabase
@@ -19,44 +19,49 @@ from llama_index.core.tools import QueryEngineTool, BaseTool
 from llama_index.core.llms import ChatMessage, LLM
 from llama_index.core.workflow import Workflow, Event, StartEvent, StopEvent, step
 from typing import Dict, List, Any, Optional
-from sentence_transformers import SentenceTransformer
 
-  
-  
+# Set up logging
+log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Ensure compatibility with Windows event loop
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-import os  
-
 # Get the model path from an environment variable, defaulting to "all-MiniLM-L6-v2"
-model_path = os.environ.get("MODEL_PATH", "all-MiniLM-L6-v2")  
+model_path = os.environ.get("MODEL_PATH", "all-MiniLM-L6-v2")
 
-hf_model = SentenceTransformer(model_path)  
+hf_model = SentenceTransformer(model_path)
 Settings.embed_model = HuggingFaceEmbedding(model_name=model_path)
 
-
-
-def load_ollama_model(max_retries=3, retry_delay=5):
+# Load Ollama model with retry logic
+async def load_ollama_model(max_retries=3, retry_delay=5):
     retries = 0
     while retries < max_retries:
         try:
             Settings.llm = Ollama(model="mistral", request_timeout=300)
-            print("✅ Ollama model loaded successfully!")
+            logger.info("✅ Ollama model loaded successfully!")
             return True
         except Exception as e:
             retries += 1
-            print(f"❌ Error loading Ollama model (attempt {retries}/{max_retries}): {e}")
+            logger.error(f"❌ Error loading Ollama model (attempt {retries}/{max_retries}): {e}")
             if retries >= max_retries:
-                print("Make sure Ollama is running and the mistral model is available.")
+                logger.error("Make sure Ollama is running and the Mistral model is available.")
                 return False
-            print(f"Retrying in {retry_delay} seconds...")
-            time.sleep(retry_delay)
+            logger.info(f"Retrying in {retry_delay} seconds...")
+            await asyncio.sleep(retry_delay)
 
-if not load_ollama_model():
+    return False
+
+# Run Ollama loading
+if not asyncio.run(load_ollama_model()):
     sys.exit(1)
 
-
-print("✅ Model Loaded Successfully!")
+logger.info("✅ Model Loaded Successfully!")
 
 # Create SQL Database in Memory
 engine = create_engine("sqlite:///:memory:", future=True)
@@ -73,7 +78,7 @@ city_stats_table = Table(
 )
 metadata_obj.create_all(engine)
 
-# Insert Data
+# Insert Data using bulk insert
 rows = [
     {"city_name": "New York City", "population": 8336000, "state": "New York"},
     {"city_name": "Los Angeles", "population": 3822000, "state": "California"},
@@ -85,116 +90,93 @@ rows = [
 with engine.begin() as connection:
     connection.execute(insert(city_stats_table), rows)
 
-
 # SQL Query Engine
 sql_database = SQLDatabase(engine, include_tables=["city_stats"])
 sql_query_engine = NLSQLTableQueryEngine(sql_database=sql_database, tables=["city_stats"]) 
 
-
-
-# Get PDF folder path from environment variable, default to "data"
+# Get PDF folder path and ensure it exists
 pdf_files_env = os.environ.get("PDF_FILES_PATH", "data")
-
-# Ensure the directory exists
 if not os.path.exists(pdf_files_env):
-    print(f"⚠️ Warning: PDF directory '{pdf_files_env}' does not exist")
-    print(f"Creating directory: {pdf_files_env}")
+    logger.warning(f"⚠️ PDF directory '{pdf_files_env}' does not exist. Creating it now.")
     os.makedirs(pdf_files_env, exist_ok=True)
 
-
-# Construct file paths dynamically
+# Load PDF Documents
 pdf_files = [
     os.path.join(pdf_files_env, "New York City - Wikipedia.pdf"),
     os.path.join(pdf_files_env, "Chicago - Wikipedia.pdf"),
 ]
-
 
 documents = []
 pdf_reader = PDFReader()
 for pdf in pdf_files:
     try:
         if os.path.exists(pdf):
-            print(f"Loading PDF: {pdf}")
+            logger.info(f"Loading PDF: {pdf}")
             documents.extend(pdf_reader.load_data(pdf))
         else:
-            print(f"⚠️ Warning: PDF file not found: {pdf}")
+            logger.warning(f"⚠️ PDF file not found: {pdf}")
     except Exception as e:
-        print(f"❌ Error loading PDF {pdf}: {e}")
+        logger.error(f"❌ Error loading PDF {pdf}: {e}")
 
 # Create Local Vector Index
-index = VectorStoreIndex.from_documents(documents, embed_model=Settings.embed_model)
-llama_cloud_query_engine = index.as_query_engine()
+if documents:
+    index = VectorStoreIndex.from_documents(documents, embed_model=Settings.embed_model)
+    llama_cloud_query_engine = index.as_query_engine()
+    logger.info(f"✅ Vector index created with {len(documents)} documents")
+else:
+    logger.warning("⚠️ No documents loaded. Creating an empty index.")
+    index = VectorStoreIndex.from_documents([], embed_model=Settings.embed_model)
+    llama_cloud_query_engine = index.as_query_engine()
 
 # Create Tools
-sql_tool = QueryEngineTool.from_defaults(
-    query_engine=sql_query_engine,
-    description="Useful for querying city populations and locations in a SQL database.",
-    name="sql_tool"
-)
+sql_tool = QueryEngineTool.from_defaults(query_engine=sql_query_engine, name="sql_tool")
+llama_cloud_tool = QueryEngineTool.from_defaults(query_engine=llama_cloud_query_engine, name="llama_cloud_tool")
 
-llama_cloud_tool = QueryEngineTool.from_defaults(
-    query_engine=llama_cloud_query_engine,
-    description="Useful for answering questions about US cities.",
-    name="llama_cloud_tool"
-)
-
-# Custom Agent Workflow
+# Define custom events
 class InputEvent(Event):
-    """Input event."""
+    """Event representing user input."""
 
 class GatherToolsEvent(Event):
-    """Gather Tools Event"""
+    """Event representing tool gathering."""
     tool_calls: Any
 
 class ToolCallEvent(Event):
-    """Tool Call event"""
+    """Event representing a tool call."""
     tool_call: Any
 
 class ToolCallEventResult(Event):
-    """Tool call event result."""
+    """Event representing a tool call result."""
     msg: ChatMessage
 
+# Custom Agent Workflow
+# Custom Agent Workflow
 class RouterOutputAgentWorkflow(Workflow):
     """Custom router output agent workflow."""
 
     def __init__(self, tools: List[BaseTool], timeout: Optional[float] = 10.0, verbose: bool = False):
         """Constructor."""
         super().__init__(timeout=timeout, verbose=verbose)
-        self.tools: List[BaseTool] = tools
-        self.tools_dict: Dict[str, BaseTool] = {tool.metadata.name: tool for tool in self.tools}
-        self.llm: LLM = Settings.llm  
-        self.chat_history: List[ChatMessage] = []
-
-    @step()
-    async def prepare_chat(self, ev: StartEvent) -> InputEvent:
-        message = ev.get("message")
-        if message is None:
-            raise ValueError("'message' field is required.")
-        self.chat_history.append(ChatMessage(role="user", content=message))
-        return InputEvent()
+        self.tools = tools
+        self.tools_dict = {tool.metadata.name: tool for tool in self.tools}
+        self.llm = Settings.llm  
+        self.chat_history = []
 
     @step()
     async def chat(self, ev: InputEvent) -> StopEvent:
         """Retrieve relevant data from SQL or RAG and return a response."""
-
         query = self.chat_history[-1].content
 
-        # Example logic to choose the right tool
         if "population" in query or "state" in query:
             result = self.tools_dict["sql_tool"].run(query)
         else:
             result = self.tools_dict["llama_cloud_tool"].run(query)
 
-            self.chat_history.append(ChatMessage(role="assistant", content=result))
-
-# Return the result in the StopEvent
+        # Append response to chat history
+        self.chat_history.append(ChatMessage(role="assistant", content=result))
         return StopEvent(result=result)
-
-
 
 # Create the Workflow
 verbose = os.environ.get("VERBOSE", "False").lower() == "true"
-
 wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
 
 # Example Queries
@@ -206,27 +188,15 @@ queries = [
     "What is the historical name of Los Angeles?"
 ]
 
+# Main Function to Execute Queries
 async def main():
-    conversation_wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
-
-    print("\n--- Starting conversation example ---")
+    logger.info("\n--- Starting conversation example ---")
     for query in queries:
         try:
-            print(f"\nUser: '{query}'")
-            result = await conversation_wf.run(message=query)
-            print(f"Assistant: {result}")
-        except Exception as e:
-            print(f"❌ Error processing query '{query}': {e}")
-
-    # Example of individual queries (for comparison)
-    print("\n--- Starting individual query examples ---")
-    for query in queries:
-        try:
-            print(f"\nProcessing query: '{query}'")
             result = await wf.run(message=query)
-            print(f"Result: {result}")
+            logger.info(f"User: {query}\nAssistant: {result}")
         except Exception as e:
-            print(f"❌ Error processing query '{query}': {e}")
+            logger.error(f"❌ Error processing query '{query}': {e}")
 
 # Run the async function properly
 if __name__ == "__main__":
