@@ -24,7 +24,7 @@ This application builds an automated insurance claim processing workflow that:
 - **Document Parsing**: Extract information from PDF policy documents
 - **LlamaCloud Integration**: Store and retrieve documents using LlamaCloud's document management
 - **Workflow Visualization**: Visualize the claim processing workflow
-- **Multiple LLM Support**: Works with OpenAI and Anthropic models
+- **LLM Support**: Works with OpenAI
 
 ![Detail workflow](./img/detail-workflow.png)
 
@@ -35,6 +35,7 @@ This application builds an automated insurance claim processing workflow that:
 - Python 3.11 or higher
 - A valid [LlamaCloud API key](https://cloud.llamaindex.ai/)
 - A valid [OpenAI API key](https://platform.openai.com/api-keys)
+- A valid [LlamaCloud Org id](https://cloud.llamaindex.ai/)
 
 ### Setup Options
 
@@ -166,10 +167,6 @@ Navigate to the URL shown in the terminal (typically [http://localhost:8501](htt
 2. Upload or enter claim information in the appropriate fields
 3. The system will analyze the claim against relevant policy documents
 4. Review the results and coverage determination
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
