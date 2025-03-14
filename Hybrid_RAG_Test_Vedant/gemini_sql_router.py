@@ -90,9 +90,10 @@ class CityQueryEngine:
     
     def query_by_state(self, state_name):
         """Query cities in a specific state"""
-        query = f"SELECT city_name, population, state FROM city_stats WHERE state LIKE '%{state_name}%' ORDER BY population DESC"
-        return self.execute_query(query)
-    
+        query_text = text("SELECT city_name, population, state "
+                          "FROM city_stats WHERE state LIKE :state_name "
+                          "ORDER BY population DESC")
+        return self.execute_query(query_text.params(state_name=f'%{state_name}%'))
     def process_population_query(self, query_text):
         """Process a natural language query about population"""
         query_lower = query_text.lower()
