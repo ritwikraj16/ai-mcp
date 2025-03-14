@@ -1,6 +1,6 @@
 # RAG and Text-to-SQL Orchestration Agent
 
-[diagram](assets/orchestrator.png)
+![diagram](assets/orchestrator.png)
 
 This project builds an orchestration agent that choose suitable tools between RAG and Text-to-SQL to generate response.
 We use:
