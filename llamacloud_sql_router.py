@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """llamacloud_sql_router.py"""
 
+
+# Standard library imports
+import asyncio
+import os
+import sys
+import time
+
 # Import necessary libraries
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama  
@@ -13,8 +20,7 @@ from llama_index.core.llms import ChatMessage, LLM
 from llama_index.core.workflow import Workflow, Event, StartEvent, StopEvent, step
 from typing import Dict, List, Any, Optional
 from sentence_transformers import SentenceTransformer
-import asyncio
-import sys
+
   
   
 if sys.platform == "win32":
@@ -28,15 +34,27 @@ model_path = os.environ.get("MODEL_PATH", "all-MiniLM-L6-v2")
 hf_model = SentenceTransformer(model_path)  
 Settings.embed_model = HuggingFaceEmbedding(model_name=model_path)
 
-# Use Ollama as LLM
 
-try:
-    Settings.llm = Ollama(model="mistral", request_timeout=300)
-    print("✅ Ollama model loaded successfully!")
-except Exception as e:
-    print(f"❌ Error loading Ollama model: {e}")
-    print("Make sure Ollama is running and the mistral model is available.")
+
+def load_ollama_model(max_retries=3, retry_delay=5):
+    retries = 0
+    while retries < max_retries:
+        try:
+            Settings.llm = Ollama(model="mistral", request_timeout=300)
+            print("✅ Ollama model loaded successfully!")
+            return True
+        except Exception as e:
+            retries += 1
+            print(f"❌ Error loading Ollama model (attempt {retries}/{max_retries}): {e}")
+            if retries >= max_retries:
+                print("Make sure Ollama is running and the mistral model is available.")
+                return False
+            print(f"Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+
+if not load_ollama_model():
     sys.exit(1)
+
 
 print("✅ Model Loaded Successfully!")
 
@@ -76,6 +94,12 @@ sql_query_engine = NLSQLTableQueryEngine(sql_database=sql_database, tables=["cit
 
 # Get PDF folder path from environment variable, default to "data"
 pdf_files_env = os.environ.get("PDF_FILES_PATH", "data")
+
+# Ensure the directory exists
+if not os.path.exists(pdf_files_env):
+    print(f"⚠️ Warning: PDF directory '{pdf_files_env}' does not exist")
+    print(f"Creating directory: {pdf_files_env}")
+    os.makedirs(pdf_files_env, exist_ok=True)
 
 
 # Construct file paths dynamically
@@ -157,9 +181,14 @@ class RouterOutputAgentWorkflow(Workflow):
 
         # Example logic to choose the right tool
         if "population" in query or "state" in query:
-             result = self.tools_dict["sql_tool"].run(query)
+            result = self.tools_dict["sql_tool"].run(query)
         else:
-             result = self.tools_dict["llama_cloud_tool"].run(query)
+            result = self.tools_dict["llama_cloud_tool"].run(query)
+
+            self.chat_history.append(ChatMessage(role="assistant", content=result))
+
+# Return the result in the StopEvent
+        return StopEvent(result=result)
 
 
 
@@ -169,25 +198,36 @@ verbose = os.environ.get("VERBOSE", "False").lower() == "true"
 wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
 
 # Example Queries
-
+queries = [
+    "Which city has the highest population?",
+    "What state is Houston located in?",
+    "Where is the Space Needle located?",
+    "How do people in Chicago get around?",
+    "What is the historical name of Los Angeles?"
+]
 
 async def main():
-    queries = [
-        "Which city has the highest population?",
-        "What state is Houston located in?",
-        "Where is the Space Needle located?",
-        "How do people in Chicago get around?",
-        "What is the historical name of Los Angeles?"
-    ]
+    conversation_wf = RouterOutputAgentWorkflow(tools=[sql_tool, llama_cloud_tool], verbose=verbose, timeout=600)
 
+    print("\n--- Starting conversation example ---")
     for query in queries:
-            try:
-                print(f"\nProcessing query: '{query}'")
-                result = await wf.run(message=query)
-                print(f"Result: {result}")
-            except Exception as e:
-                print(f"❌ Error processing query '{query}': {e}")
+        try:
+            print(f"\nUser: '{query}'")
+            result = await conversation_wf.run(message=query)
+            print(f"Assistant: {result}")
+        except Exception as e:
+            print(f"❌ Error processing query '{query}': {e}")
 
-# Run the main function properly
+    # Example of individual queries (for comparison)
+    print("\n--- Starting individual query examples ---")
+    for query in queries:
+        try:
+            print(f"\nProcessing query: '{query}'")
+            result = await wf.run(message=query)
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"❌ Error processing query '{query}': {e}")
+
+# Run the async function properly
 if __name__ == "__main__":
     asyncio.run(main())  # Ensures async execution
