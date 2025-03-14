@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 import streamlit as st
 
+load_dotenv()
 
 def load_config() -> Dict[str, Any]:
     """
