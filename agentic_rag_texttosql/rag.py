@@ -6,8 +6,8 @@ from llama_index.core.tools import QueryEngineTool
 from llama_index.indices.managed.llama_cloud import LlamaCloudIndex
 
 # Load API Keys
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
-os.environ["LLAMA_CLOUD_API_KEY"] = "LLAMA_CLOUD_API_KEY"
+# os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
+# os.environ["LLAMA_CLOUD_API_KEY"] = "LLAMA_CLOUD_API_KEY"
 
 # Initialize OpenAI Model
 Settings.llm = OpenAI("gpt-3.5-turbo")
