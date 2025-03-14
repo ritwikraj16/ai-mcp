@@ -15,7 +15,7 @@ st.set_page_config(page_title="LlamaCloud RAG Demo", page_icon="🦙", layout="w
 
 # --- Google API Key ---
 if "GOOGLE_API_KEY" not in st.session_state:
-    st.session_state.GOOGLE_API_KEY = "AIzaSyCspBMYV1czz1VNdX0_8omL6j9RcR6TNzI"
+    st.session_state.GOOGLE_API_KEY = ""
 
 # --- Database Setup ---
 def setup_database():
