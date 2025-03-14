@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+from dotenv import load_dotenv
 import nest_asyncio
 from llama_index.core import SQLDatabase, Settings
 from llama_index.llms.openai import OpenAI
@@ -7,8 +8,12 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer
 from llama_index.core.query_engine import NLSQLTableQueryEngine
 from llama_index.core.tools import QueryEngineTool
 
-# Set up API key (Ensure to store securely in production)
-os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the API key securely
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
 # Apply Nest Asyncio for Streamlit compatibility
 nest_asyncio.apply()
 
