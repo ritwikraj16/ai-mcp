@@ -1,4 +1,4 @@
-# Patient Case Summarizer using LLamaCloud
+# Patient Case Summarizer
 
 The Patient Case Summary Generator is a Streamlit app that lets healthcare professionals upload patient JSON data to create concise AI-generated summaries. It uses medical guidelines to detail conditions, encounters, and recommendations.
 
