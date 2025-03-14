@@ -1,8 +1,7 @@
 import streamlit as st
 import asyncio
 import os
-from pathlib import Path
-from patient_case_summary import GuidelineRecommendationWorkflow, retriever, LogEvent
+from patient_case_summary import GuidelineRecommendationWorkflow, retriever
 from llama_index.llms.ollama import Ollama
 
 # Set page configuration for a wider layout and custom title

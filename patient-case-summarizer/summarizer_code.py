@@ -2,13 +2,11 @@ import os
 import json
 import asyncio
 import logging
-from typing import List
 from pathlib import Path
 from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import Optional, List, Tuple
 
-from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.core.retrievers import BaseRetriever
 from llama_index.core.prompts import ChatPromptTemplate
@@ -607,9 +605,6 @@ workflow = GuidelineRecommendationWorkflow(
 # Visualize the workflow
 from llama_index.utils.workflow import draw_all_possible_flows
 draw_all_possible_flows(GuidelineRecommendationWorkflow, filename="guideline_rec_workflow.html")
-
-# Run the workflow
-from IPython.display import clear_output
 
 async def main():
     handler = workflow.run(patient_json_path="data/almeta_buckridge.json")
