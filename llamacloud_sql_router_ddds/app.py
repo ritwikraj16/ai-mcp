@@ -26,7 +26,16 @@ st.set_page_config(
 )
 
 # Set app title and description 
-st.title("US City Guide🏙️")
+st.markdown(
+    """
+    <h1 style='text-align: center;'>
+         <span style='color:#FF4B4B;'>US City Guide 🏙️</span>
+    </h1>
+    <h3 style='text-align: center;'>Powered by OpenAI & LlamaCloud</h3>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("""
 **Ask questions about New York City, Los Angeles, Chicago, Houston, Miami, or Seattle.**
             
