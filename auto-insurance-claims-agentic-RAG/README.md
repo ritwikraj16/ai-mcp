@@ -71,3 +71,14 @@ The app will be available at `http://localhost:8501`
   "vehicle_details": "2018 Honda Accord, VIN: 1HGCV1F34JA123456"
 }
 ```
+## Sample claim decision
+
+```json
+{
+"claim_number":"CLAIM-0001"
+"covered":true
+"deductible":0
+"recommended_payout":0
+"notes":"Collision is covered, subject to exclusions. Exclusion 1 applies as the vehicle was used to deliver pizzas for compensation."
+}
+```
