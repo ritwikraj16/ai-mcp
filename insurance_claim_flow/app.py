@@ -19,7 +19,7 @@ async def run_workflow(workflow, claim_json_path):
 
 
 def main():
-    st.title("🚗 Auto Insurance Claim Processor")
+    st.title("📋 Auto Insurance Claim Assistant")
     st.markdown(
         """
         <div style="padding: 15px; border-radius: 8px; background-color: #e6f3ff; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -88,7 +88,7 @@ def main():
             """
             <div style="padding: 15px; border-radius: 8px; background-color: #f9f9f9; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <span style="font-size: 1em; color: #555;">
-                    Drop your claim JSON here to begin!
+                    Upload your claim JSON here to begin!
                 </span>
             </div>
             """,
@@ -126,15 +126,20 @@ def main():
                 unsafe_allow_html=True,
             )
 
-        if st.button("Process Claim"):
+        if st.button(
+            "⚙️ Process Claim", type="primary", help="Start analyzing the uploaded claim"
+        ):
             if not openai_api_key or not llama_cloud_api_key:
-                st.error("Please provide API keys in the sidebar.")
+                st.error("❌ Please provide API keys in the sidebar to proceed.")
             else:
-                with st.status("Processing claim...", expanded=True) as status:
-                    status.write("Parsing claim...")
+                with st.status(
+                    "🔄 Processing Your Claim...", expanded=True, state="running"
+                ) as status:
+                    status.write("📝 Parsing claim data...")
                     with open("temp_claim.json", "w") as f:
                         json.dump(claim_data, f)
-                    status.write("Initializing workflow...")
+
+                    status.write("🛠️ Setting up workflow...")
                     llm = OpenAI(model=model_option)
                     try:
                         index = LlamaCloudIndex(
@@ -144,7 +149,7 @@ def main():
                         )
                         policy_retriever = index.as_retriever(rerank_top_n=3)
                     except Exception as e:
-                        status.error(f"Failed to initialize claims index: {str(e)}")
+                        status.error(f"❌ Failed to connect to policy index: {str(e)}")
                         st.stop()
                     try:
                         declarations_index = LlamaCloudIndex(
@@ -154,10 +159,9 @@ def main():
                         )
                     except Exception as e:
                         status.error(
-                            f"Failed to initialize declarations index: {str(e)}"
+                            f"❌ Failed to connect to declarations index: {str(e)}"
                         )
                         st.stop()
-                    loguru.logger.info("Initializing workflow...")
                     workflow = AutoInsuranceWorkflow(
                         policy_retriever=policy_retriever,
                         declarations_index=declarations_index,
@@ -165,17 +169,27 @@ def main():
                         verbose=True,
                         timeout=None,
                     )
-                    status.write("Running analysis...")
-                    try:
-                        result = asyncio.run(run_workflow(workflow, "temp_claim.json"))
-                    except Exception as e:
-                        status.error(f"Error processing claim: {str(e)}")
-                        st.stop()
-                    status.write("Claim processed!")
+
+                    status.write("🔍 Analyzing claim details...")
+                    with st.spinner("Running analysis..."):
+                        try:
+                            result = asyncio.run(
+                                run_workflow(workflow, "temp_claim.json")
+                            )
+                        except Exception as e:
+                            status.error(f"❌ Processing failed: {str(e)}")
+                            st.stop()
+
+                    status.write("✅ Claim processed successfully!")
+                    status.update(
+                        label="🎉 Processing Complete!",
+                        state="complete",
+                        expanded=False,
+                    )
                     os.remove("temp_claim.json")
 
                 # Display retrieved information
-                st.subheader("Retrieved Policy Information 📚")
+                st.subheader("Retrieved Information 📚")
                 with st.expander(f"Claims Index ({claim_index_name})"):
                     claim_text = result.get(
                         "claim_text", "No claim policy text retrieved."
