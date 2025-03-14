@@ -10,7 +10,6 @@
     ·
     <a href="https://typefully.com/t/sjcCzxz">View Tweet</a>
   </p>
-</div>
 
 --- 
 
