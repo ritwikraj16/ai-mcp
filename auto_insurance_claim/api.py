@@ -10,14 +10,10 @@ load_dotenv()
 # Llama cloud 
 llama_cloud_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
 org_id = os.getenv("ORGANIZATION_ID")
-# Llama cloud 
-llama_cloud_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
-org_id = os.getenv("ORGANIZATION_ID")
 
 if not llama_cloud_api_key:
     raise ValueError("LLAMA_CLOUD_API_KEY environment variable is required")
 
-org_id = os.getenv("ORGANIZATION_ID")
 if not org_id:
     raise ValueError("ORGANIZATION_ID environment variable is required")
 
@@ -38,8 +34,8 @@ def llama_client():
     return client 
 
 def ollama_llm():
-    llm = Ollama(model="llama3.1:latest", request_timeout=360.0
-    )
+    llm = Ollama(model="llama3.1:latest", 
+                 request_timeout=360.0)
     return llm 
 
 
@@ -53,7 +49,5 @@ def get_opik_tracker():
     project_name = os.getenv("OPIK_PROJECT_NAME")
     if not api_key:
         raise ValueError(
-            "OPIK API KEY not set visit https://www.comet.com/opik\
-            to set" 
-        )
+            "OPIK API KEY not set visit https://www.comet.com/opik to set" )
     return api_key, opik_workspace, project_name

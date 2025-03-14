@@ -35,9 +35,9 @@ class LogEvent(Event):
     delta: bool = False
 
 
-def parse_claim(data: str) -> ClaimInfo:
+def parse_claim(file_path: str) -> ClaimInfo:
     import json
-    with open(data, "r") as f:
+    with open(file_path, "r") as f:
         data = json.load(f)
     return ClaimInfo.model_validate(data)  # replace "ClaimInfo".model_validate with actual ClaimInfo class method
 
