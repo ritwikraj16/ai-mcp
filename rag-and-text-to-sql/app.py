@@ -11,7 +11,9 @@ from streamlit_pdf_viewer import pdf_viewer
 
 # Import necessary components from llama_index
 from llama_index.core import Settings
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.ollama import Ollama
+# from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.fastembed import FastEmbedEmbedding
 from tools import setup_document_tool, setup_sql_tool
 from workflow import RouterOutputAgentWorkflow
 
@@ -24,7 +26,6 @@ from opik.integrations.llama_index import LlamaIndexCallbackHandler
 
 opik_callback_handler = LlamaIndexCallbackHandler()
 Settings.callback_manager = CallbackManager([opik_callback_handler])
-
 
 # Load environment variables
 load_dotenv()
@@ -43,9 +44,6 @@ st.set_page_config(
 if "file_uploaded" not in st.session_state:
     st.session_state.file_uploaded = False
 
-if "api_key_set" not in st.session_state:
-    st.session_state.api_key_set = False
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -58,6 +56,9 @@ if "workflow" not in st.session_state:
 
 if "workflow_needs_update" not in st.session_state:
     st.session_state.workflow_needs_update = False
+
+if "llm_initialized" not in st.session_state:
+    st.session_state.llm_initialized = False
 
 
 #####################################
@@ -116,18 +117,17 @@ def display_pdf(file_path):
 
 
 @st.cache_resource
-def initialize_models(api_key=None):
-    """Initialize LLM model with the given API key"""
-    openai_api_key = api_key or st.secrets.get("OPENAI_API_KEY")
-    if not openai_api_key:
+def initialize_model():
+    """Initialize models for LLM and embedding"""
+    try:
+        # Initialize models for LLM and embedding
+        llm = Ollama(model="mistral", request_timeout=120.0)
+        # embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        embed_model = FastEmbedEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        return llm, embed_model
+    except Exception as e:
+        st.error(f"Error initializing models: {str(e)}")
         return None
-
-    os.environ["OPENAI_API_KEY"] = openai_api_key
-
-    # Initialize LLM
-    llm = OpenAI(model="gpt-4o-mini")
-
-    return llm
 
 
 def handle_file_upload(uploaded_files):
@@ -171,12 +171,6 @@ def handle_file_upload(uploaded_files):
         return None
 
 
-def set_api_key(api_key):
-    """Function to set API key"""
-    st.session_state.api_key = api_key
-    st.session_state.api_key_set = True
-
-
 def initialize_workflow(tools):
     """Initialize workflow with the given tools"""
     try:
@@ -207,13 +201,22 @@ def main():
     with st.sidebar:
         st.header("Configuration")
 
-        # API Key input
-        api_key = st.text_input(
-            "OpenAI API Key", type="password", help="Enter your OpenAI API key"
-        )
-        if st.button("Set API Key"):
-            set_api_key(api_key)
-            st.success("API Key set!")
+        # Model information
+        st.info("This app uses Ollama for local inference.")
+
+        # LLM initialization status
+        if not st.session_state.llm_initialized:
+            with st.spinner("Initializing models..."):
+                llm, embed_model = initialize_model()
+                if llm:
+                    Settings.llm = llm
+                    Settings.embed_model = embed_model
+                    st.session_state.llm_initialized = True
+                    st.success("Models initialized!")
+                else:
+                    st.error("Failed to initialize models.")
+        else:
+            st.success("Models: Ready ✓")
 
         # File upload section in the sidebar
         st.subheader("Documents")
@@ -232,20 +235,11 @@ def main():
                     for i, file in enumerate(st.session_state.uploaded_files):
                         st.write(f"- {file['name']}")
 
-        # Status indicators
-        st.subheader("Status")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.session_state.api_key_set:
-                st.success("API Key: ✓")
-            else:
-                st.error("API Key: ✗")
-
-        with col2:
-            if st.session_state.file_uploaded:
-                st.success("Document: ✓")
-            else:
-                st.warning("Document: ✗")
+        # Document status indicator
+        if st.session_state.file_uploaded:
+            st.success("Documents: ✓")
+        else:
+            st.warning("Documents: ✗")
 
     # Chat title and reset button in the same row
     chat_header_col1, chat_header_col2 = st.columns([5, 1])
@@ -254,12 +248,8 @@ def main():
     with chat_header_col2:
         st.button("Reset Chat ↺", on_click=reset_chat)
 
-    # Initialize models if API key is set
-    if st.session_state.api_key_set:
-        api_key = st.session_state.api_key
-        llm = initialize_models(api_key)
-        Settings.llm = llm
-
+    # Continue only if LLM is initialized
+    if st.session_state.llm_initialized:
         # Initialize tools with first tool as SQL tool
         tools = [setup_sql_tool()]
 
@@ -267,16 +257,13 @@ def main():
             file_key = f"{st.session_state.id}-documents"
 
             if file_key not in st.session_state.file_cache:
-                with st.sidebar:
-                    with st.spinner(
-                        "Processing documents and initializing workflow..."
-                    ):
-                        # Use the uploaded documents to create a document tool
-                        document_tool = setup_document_tool(
-                            file_dir=st.session_state.temp_dir
-                        )
-                        st.session_state.file_cache[file_key] = document_tool
-                    st.sidebar.success("Documents loaded successfully!")
+                with st.spinner("Processing documents..."):
+                    # Use the uploaded documents to create a document tool
+                    document_tool = setup_document_tool(
+                        file_dir=st.session_state.temp_dir
+                    )
+                    st.session_state.file_cache[file_key] = document_tool
+                st.success("Documents processed successfully!")
 
             tools.append(st.session_state.file_cache[file_key])
 
@@ -372,12 +359,16 @@ def main():
                         with st.chat_message(message["role"]):
                             st.markdown(message["content"])
     else:
-        # Application information
-        st.info("Please enter your OpenAI API key in the sidebar to begin.")
+        # Application information if LLM not initialized
+        st.error("Ollama could not be initialized. Please make sure it is running.")
         st.markdown(
             """
-            This application uses OpenAI's API to power the assistant. 
-            Once you've entered your API key, you'll be able to:
+            ### Ollama Setup
+            1. Make sure Ollama is installed and running on your machine
+            2. Ensure the 'mistral' model is downloaded via `ollama pull mistral`
+            3. Restart this application
+            
+            Once Ollama is running, you'll be able to:
             1. Query information about U.S. cities
             2. Upload and analyze PDF documents
             """
