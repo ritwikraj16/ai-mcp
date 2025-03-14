@@ -14,7 +14,7 @@ This project allows you to:
 - Experience intelligent query routing based on question intent
 
 For a detailed explanation of this project, check out this Twitter thread:
-<insert Twitter thread link here>
+<https://typefully.com/t/9Nq299N>
 
 ### Tech Stack
 
