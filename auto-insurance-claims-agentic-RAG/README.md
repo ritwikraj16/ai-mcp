@@ -1,3 +1,5 @@
+![Architecture diagram](./images/Architecture_diagram.png)
+
 # Auto Insurance Claim Processor
 
 This application processes auto insurance claims using LlamaIndex and Gemini LLM. It can be run as a command-line tool or as a Streamlit web application.
