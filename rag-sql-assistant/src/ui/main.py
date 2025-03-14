@@ -9,7 +9,6 @@ import os
 import streamlit as st
 import base64
 import logging
-from typing import Dict, Any
 from pathlib import Path
 
 # Configure logging
@@ -27,30 +26,20 @@ def setup_page_config():
 
 def render_sidebar():
     """Render the sidebar with API status and about information."""
-    from src.config import get_openai_api_key
     
     with st.sidebar:
-        st.header("🤖 RAG-SQL Assistant")
-        
-        # Environment status
-        api_key = get_openai_api_key()
-        api_status = "✅ Connected" if api_key else "❌ Not Connected"
-        
-        st.markdown(f"**OpenAI API Status:** {api_status}")
-        
-        if not api_key:
-            st.warning("Please set your OpenAI API key in the .env file.")
-        
-        st.markdown("---")
         
         # About section
         st.markdown("""
         ### About This Project
         
-        This RAG-SQL Assistant demonstrates how to create a hybrid query system that combines 
-        the strengths of both retrieval-augmented generation and text-to-SQL capabilities.
+        This assistant intelligently routes your questions to:
         
-        The project was created as a demonstration for the Daily Dose of Data Science publication.
+        1. **SQL Database**: City stats (population, state) for NYC, LA, Chicago, Houston, Miami, and Seattle
+        
+        2. **LlamaCloud RAG**: Wikipedia content about these cities
+        
+        Ask about population figures or explore detailed information like history, attractions, and more. The system automatically chooses the right data source.
         
         **Source Code**: [GitHub Repository](https://github.com/patchy631/ai-engineering-hub)
         """)
@@ -68,53 +57,62 @@ def render_sidebar():
 
 def render_header():
     """Render the application header with logo."""
-    # Try to find the OpenAI logo
     try:
-        # Define possible paths for the logo
-        possible_paths = [
+        # Define base assets directory
+        assets_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent / "assets"
+        
+        # Define possible paths for the logos
+        openai_possible_paths = [
             os.path.join("assets", "openai-logo.png"),
             "repo-to-submit-pr/rag-sql-assistant/assets/openai-logo.png",
-            "rag-sql-assistant/assets/openai-logo.png"
+            "rag-sql-assistant/assets/openai-logo.png",
+            str(assets_dir / "openai-logo.png")
         ]
         
-        # Also check for assets in the same directory as this file
-        assets_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent / "assets"
-        if assets_dir.exists():
-            possible_paths.append(str(assets_dir / "openai-logo.png"))
+        llama_cloud_possible_paths = [
+            os.path.join("assets", "llama-cloud.png"),
+            "repo-to-submit-pr/rag-sql-assistant/assets/llama-cloud.png",
+            "rag-sql-assistant/assets/llama-cloud.png",
+            str(assets_dir / "llama-cloud.png")
+        ]
         
-        # Try each path
-        for path in possible_paths:
+        # Find OpenAI logo
+        openai_logo_path = None
+        for path in openai_possible_paths:
             if os.path.exists(path):
-                col1, col2 = st.columns([6, 1])
-                
-                with col1:
-                    st.markdown("""
-                    # RAG-SQL Assistant powered by <img src="data:image/png;base64,{}" width="200" style="vertical-align: -5px; padding-left: 10px;">
-                    """.format(
-                        base64.b64encode(open(path, "rb").read()).decode()
-                    ), unsafe_allow_html=True)
-                    st.subheader("Ask questions using natural language - get answers from SQL or documents!")
-                
-                with col2:
-                    from src.ui.chat import reset_chat
-                    st.button("Clear ↺", on_click=reset_chat)
-                
-                return
+                openai_logo_path = path
+                break
         
-        # If no logo found, use plain header
+        # Find LlamaCloud logo
+        llama_cloud_logo_path = None
+        for path in llama_cloud_possible_paths:
+            if os.path.exists(path):
+                llama_cloud_logo_path = path
+                break
+        
+        # Display header with logos if found
         col1, col2 = st.columns([6, 1])
+        
         with col1:
-            st.header("RAG-SQL Assistant")
-            st.subheader("Ask questions using natural language - get answers from SQL or documents!")
+            if openai_logo_path and llama_cloud_logo_path:
+                # Both logos found
+                st.markdown("""
+                # RAG-SQL Assistant powered by <img src="data:image/png;base64,{}" style="height: 0.9em; vertical-align: middle; padding-left: 5px; padding-right: 5px;"> and <img src="data:image/png;base64,{}" style="height: 0.9em; vertical-align: middle; padding-left: 5px;">
+                """.format(
+                    base64.b64encode(open(openai_logo_path, "rb").read()).decode(),
+                    base64.b64encode(open(llama_cloud_logo_path, "rb").read()).decode()
+                ), unsafe_allow_html=True)
+            else:
+                # Fallback to text if logos not found
+                st.header("RAG-SQL Assistant powered by OpenAI and LlamaCloud")
         
         with col2:
             from src.ui.chat import reset_chat
             st.button("Clear ↺", on_click=reset_chat)
             
     except Exception as e:
-        logger.exception(f"Error loading logo: {e}")
-        st.header("RAG-SQL Assistant")
-        st.subheader("Ask questions using natural language - get answers from SQL or documents!")
+        logger.exception(f"Error loading logos: {e}")
+        st.header("RAG-SQL Assistant powered by OpenAI and LlamaCloud")
 
 def render_main_ui(process_query_func):
     """
@@ -128,6 +126,16 @@ def render_main_ui(process_query_func):
     
     # Initialize chat state
     initialize_chat_state()
+    
+    # Check if this is a new session (no messages yet) and add a welcome message
+    if not st.session_state.get("messages", []):
+        welcome_message = (
+            "👋 Hi there! I'm your RAG-SQL Assistant. Ask me anything about New York City, Los Angeles, "
+            "Chicago, Houston, Miami, or Seattle!\n\n"
+            "I can tell you about population figures, which states they're in, or dive into details "
+            "about history, attractions, transportation, and more. What would you like to know?"
+        )
+        add_assistant_message(welcome_message)
     
     # Display chat history
     display_chat_history()
