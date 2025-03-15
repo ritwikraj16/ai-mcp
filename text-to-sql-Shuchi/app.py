@@ -46,12 +46,25 @@ def sql_engine(query: str) -> str:
     Returns:
         A string representation of the query results.
     """
-    output = ""
-    with engine.connect() as con:
-        rows = con.execute(text(query))
-        for row in rows:
-            output += "\n" + str(row)
-    return output
+    try:
+        with engine.connect() as con:
+            result = con.execute(text(query))
+            columns = result.keys()
+            rows = result.fetchall()
+            
+            if not rows:
+                return "No results found."
+                
+            # Format results as a table
+            output = "\n| " + " | ".join(columns) + " |"
+            output += "\n|" + "---|" * len(columns)
+            
+            for row in rows:
+                output += "\n| " + " | ".join(str(val) for val in row) + " |"
+                
+            return output
+    except Exception as e:
+        return f"Error executing SQL query: {str(e)}"
 
 # Initialize the CodeAgent with the SQL engine tool
 model_name = 'Gemini Flash 2.0'
