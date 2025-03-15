@@ -113,13 +113,13 @@ When a user asks a question:
 
 3. **Semantic Search (RAG)**:
 
-   - The system retrieves relevant information from city documents stored in the Qdrant vector database suing similarity search.
+   - The system retrieves relevant information from city documents stored in the Qdrant vector database using similarity search.
 
    - The LLM then synthesizes a response based on the retrieved context.
 
 4. **Response Generation**:
 
-   - The agent system combines the results and displays the final generated reponse in the chat interface.
+   - The agent system combines the results and displays the final generated response in the chat interface.
 
 ### Example Usage
 
@@ -148,6 +148,6 @@ You can extend this application by:
 
 ## Contact Me
 For questions, or feedback, feel free to reach out to me at:
-- [**Email**](mailto:nikhil@sfw.gmail.com)
+- [**Email**](mailto:nikhil.sfw@gmail.com)
 - [**LinkedIn**](https://www.linkedin.com/in/nikhil-kotra/)
 - [**GitHub**](https://www.github.com/nikhil-1e9)
