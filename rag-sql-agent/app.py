@@ -1,7 +1,14 @@
+import asyncio
 import nest_asyncio
+
+# Ensure an event loop exists before applying nest_asyncio
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
 nest_asyncio.apply()
 
-import asyncio
 import streamlit as st
 import qdrant_client
 import base64
@@ -128,8 +135,8 @@ def initialize_city_data():
             return None
 
         with st.spinner("🧠 Initializing vector database..."):
-            # client = qdrant_client.QdrantClient(":memory:")
-            client = qdrant_client.QdrantClient(url="http://localhost:6333", prefer_grpc=True)
+            client = qdrant_client.QdrantClient(":memory:")
+            # client = qdrant_client.QdrantClient(url="http://localhost:6333", prefer_grpc=True)
             vector_store = QdrantVectorStore(client=client, collection_name="city_docs")
             embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
             
