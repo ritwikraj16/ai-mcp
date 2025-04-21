@@ -45,9 +45,16 @@ class LLMJudgeMetric(base_metric.BaseMetric):
         self.name = name
         self.model_name = model_name
 
+        # Check if API key is available
+        api_key = os.environ.get("ATLA_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "ATLA_API_KEY environment variable not found. Please check your .env file."
+            )
+
         # Initialize the OpenAI client with the API key and base URL for Atla
         self.llm_client = OpenAI(
-            api_key=os.environ.get("ATLA_API_KEY"),
+            api_key=api_key,
             base_url="https://api.atla-ai.com/v1",
         )
 
@@ -83,9 +90,12 @@ class LLMJudgeMetric(base_metric.BaseMetric):
         messages = [{"role": "user", "content": prompt}]
 
         # Call the LLM with the prepared messages
-        response = self.llm_client.chat.completions.create(
-            model=self.model_name, messages=messages
-        )
+        try:
+            response = self.llm_client.chat.completions.create(
+                model=self.model_name, messages=messages
+            )
+        except Exception as e:
+            raise RuntimeError(f"Error calling LLM API: {str(e)}") from e
 
         # Parse the response from the LLM
         response_content = (
@@ -102,8 +112,9 @@ class LLMJudgeMetric(base_metric.BaseMetric):
 
 
 # Example usage
-metric = LLMJudgeMetric()
-metric.score(
-    input="Tell me a joke.",
-    output="Why did the chicken cross the road? To get to the other side",
-)
+if __name__ == "__main__":
+    metric = LLMJudgeMetric()
+    metric.score(
+        input="Tell me a joke.",
+        output="Why did the chicken cross the road? To get to the other side",
+    )
