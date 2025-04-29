@@ -167,128 +167,142 @@ def create_query_engine(content_path: str, repo_name: str) -> Any:
         logger.error(f"Error creating query engine: {str(e)}")
         raise QueryEngineError(f"Failed to create query engine: {str(e)}")
 
-# Initialize session state
-if "id" not in st.session_state:
-    st.session_state.id = uuid.uuid4()
-    st.session_state.file_cache = {}
-    st.session_state.messages = []
-
-session_id = st.session_state.id
-
-# Sidebar
-with st.sidebar:
-    st.header("Add your GitHub repository!")
-    
-    github_url = st.text_input(
-        "Enter GitHub repository URL",
-        placeholder="https://github.com/username/repo",
-        help="Enter a valid GitHub repository URL"
-    )
-    
-    load_repo = st.button("Load Repository", type="primary")
-
-    if github_url and load_repo:
-        try:
-            # Validate URL
-            if not validate_github_url(github_url):
-                st.error("Please enter a valid GitHub repository URL")
-                st.stop()
-
-            repo_name = get_repo_name(github_url)
-            file_key = f"{session_id}-{repo_name}"
-            
-            if file_key not in st.session_state.file_cache:
-                with st.spinner("Processing your repository..."):
-                    with tempfile.TemporaryDirectory() as temp_dir:
-                        try:
-                            summary, tree, content = process_with_gitingets(github_url)
-                            
-                            # Write content to temporary file
-                            content_path = os.path.join(temp_dir, f"{repo_name}_content.md")
-                            with open(content_path, "w", encoding="utf-8") as f:
-                                f.write(content)
-                            
-                            # Create and cache query engine
-                            query_engine = create_query_engine(temp_dir, repo_name)
-                            st.session_state.file_cache[file_key] = query_engine
-                            
-                            st.success("Repository loaded successfully! Ready to chat.")
-                            logger.info(f"Successfully processed repository: {repo_name}")
-                            
-                        except ProcessingError as e:
-                            st.error(str(e))
-                            logger.error(f"Error processing repository {repo_name}: {str(e)}")
-                            st.stop()
-                        except Exception as e:
-                            st.error("An unexpected error occurred while processing the repository")
-                            logger.error(f"Unexpected error: {str(e)}")
-                            st.stop()
-            else:
-                st.info("Repository already loaded. Ready to chat!")
-                
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-            logger.error(f"Error in repository loading process: {str(e)}")
-            st.stop()
-
-# Main content
-col1, col2 = st.columns([6, 1])
-
-with col1:
-    st.header("Chat with GitHub using RAG </>")
-
-with col2:
-    st.button("Clear Chat ↺", on_click=reset_chat, help="Clear chat history and reset session")
-
-# Display chat history
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Chat input
-if prompt := st.chat_input("What's up?"):
+def initialize_session_state():
+    """Initialize or reset session state variables"""
     try:
-        # Add user message to chat history
+        if 'messages' not in st.session_state:
+            st.session_state.messages = []
+        if 'context' not in st.session_state:
+            st.session_state.context = None
+        if 'file_cache' not in st.session_state:
+            st.session_state.file_cache = {}
+        if 'current_repo' not in st.session_state:
+            st.session_state.current_repo = None
+        if 'query_engine' not in st.session_state:
+            st.session_state.query_engine = None
+        logger.info("Session state initialized successfully")
+    except Exception as e:
+        logger.error(f"Error initializing session state: {str(e)}")
+        raise SessionError("Failed to initialize session state")
+
+def handle_repository_loading(github_url: str) -> None:
+    """Handle repository loading process with proper error handling"""
+    try:
+        validate_github_url(github_url)
+        repo_name = get_repo_name(github_url)
+        
+        with st.spinner(f"Processing repository {repo_name}..."):
+            summary, tree, content = process_with_gitingets(github_url)
+            
+            # Create temporary directory for repository content
+            with tempfile.TemporaryDirectory() as temp_dir:
+                content_path = os.path.join(temp_dir, repo_name)
+                os.makedirs(content_path, exist_ok=True)
+                
+                # Save repository content
+                for file_path, file_content in content.items():
+                    file_dir = os.path.dirname(os.path.join(content_path, file_path))
+                    os.makedirs(file_dir, exist_ok=True)
+                    with open(os.path.join(content_path, file_path), 'w', encoding='utf-8') as f:
+                        f.write(file_content)
+                
+                # Create query engine
+                query_engine = create_query_engine(content_path, repo_name)
+                
+                # Update session state
+                st.session_state.query_engine = query_engine
+                st.session_state.current_repo = repo_name
+                st.session_state.context = {
+                    'summary': summary,
+                    'tree': tree,
+                    'content': content
+                }
+                
+                st.success(f"Successfully loaded repository: {repo_name}")
+                logger.info(f"Repository {repo_name} loaded successfully")
+                
+    except ValidationError as e:
+        st.error(f"Validation error: {str(e)}")
+        logger.warning(f"Validation error for URL {github_url}: {str(e)}")
+    except ProcessingError as e:
+        st.error(f"Processing error: {str(e)}")
+        logger.error(f"Error processing repository {github_url}: {str(e)}")
+    except QueryEngineError as e:
+        st.error(f"Query engine error: {str(e)}")
+        logger.error(f"Error creating query engine for {github_url}: {str(e)}")
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error processing {github_url}: {str(e)}")
+    finally:
+        cleanup_session()
+
+def handle_chat_message(prompt: str) -> None:
+    """Handle chat message processing with proper error handling"""
+    try:
+        if not st.session_state.query_engine:
+            raise QueryEngineError("Please load a repository first!")
+        
+        if not prompt.strip():
+            raise ValidationError("Please enter a non-empty message")
+        
+        # Add user message to chat
         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        # Display user message
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Process and display assistant response
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
-            
-            try:
-                repo_name = get_repo_name(github_url)
-                file_key = f"{session_id}-{repo_name}"
-                query_engine = st.session_state.file_cache.get(file_key)
-                
-                if query_engine is None:
-                    raise QueryEngineError("Please load a repository first!")
-                
-                response = query_engine.query(prompt)
-                
-                if hasattr(response, 'response_gen'):
-                    for chunk in response.response_gen:
-                        if isinstance(chunk, str):
-                            full_response += chunk
-                            message_placeholder.markdown(full_response + "▌")
-                else:
-                    full_response = str(response)
-                    message_placeholder.markdown(full_response)
-                    
-                message_placeholder.markdown(full_response)
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
-                
-            except QueryEngineError as e:
-                st.error(str(e))
-                logger.error(f"Error in chat processing: {str(e)}")
-            except Exception as e:
-                st.error("An unexpected error occurred while processing your query")
-                logger.error(f"Unexpected error in chat: {str(e)}")
-                
+        # Get response from query engine
+        response = st.session_state.query_engine.query(prompt)
+        
+        # Format and display response
+        full_response = f"Repository: {st.session_state.current_repo}\n\n{response}"
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        
+        logger.info(f"Successfully processed chat message for repository {st.session_state.current_repo}")
+        
+    except ValidationError as e:
+        st.error(f"Validation error: {str(e)}")
+        logger.warning(f"Chat validation error: {str(e)}")
+    except QueryEngineError as e:
+        st.error(f"Query engine error: {str(e)}")
+        logger.error(f"Error in chat processing: {str(e)}")
     except Exception as e:
-        st.error("An error occurred in the chat system")
-        logger.error(f"Chat system error: {str(e)}")
+        st.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error in chat: {str(e)}")
+
+def main():
+    """Main application function"""
+    st.title("GitHub Repository RAG")
+    
+    try:
+        # Initialize session state
+        initialize_session_state()
+        
+        # Sidebar for repository input
+        with st.sidebar:
+            st.header("Repository Settings")
+            github_url = st.text_input("Enter GitHub Repository URL")
+            
+            if st.button("Load Repository"):
+                if github_url:
+                    handle_repository_loading(github_url)
+                else:
+                    st.warning("Please enter a GitHub repository URL")
+            
+            if st.button("Reset Chat"):
+                reset_chat()
+        
+        # Main chat interface
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+        
+        if prompt := st.chat_input("Ask a question about the repository"):
+            handle_chat_message(prompt)
+            
+    except SessionError as e:
+        st.error(f"Session error: {str(e)}")
+        logger.error(f"Session error in main: {str(e)}")
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error in main: {str(e)}")
+
+if __name__ == "__main__":
+    main()
