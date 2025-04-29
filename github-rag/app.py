@@ -5,6 +5,8 @@ import uuid
 import pandas as pd
 from typing import Optional, Dict, Any
 import logging
+from functools import wraps
+import time
 
 from gitingest import ingest
 from llama_index.core import Settings, PromptTemplate, VectorStoreIndex, SimpleDirectoryReader
@@ -13,7 +15,10 @@ import streamlit as st
 from dotenv import load_dotenv
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -21,43 +26,106 @@ load_dotenv()
 # Constants
 MAX_REPO_SIZE = 100 * 1024 * 1024  # 100MB
 SUPPORTED_REPO_TYPES = ['.py', '.md', '.ipynb', '.js', '.ts', '.json']
+MAX_RETRIES = 3
+RETRY_DELAY = 1  # seconds
 
 class GitHubRAGError(Exception):
-    """Custom exception for GitHub RAG application errors"""
+    """Base exception for GitHub RAG application errors"""
     pass
+
+class ValidationError(GitHubRAGError):
+    """Raised when input validation fails"""
+    pass
+
+class ProcessingError(GitHubRAGError):
+    """Raised when repository processing fails"""
+    pass
+
+class QueryEngineError(GitHubRAGError):
+    """Raised when query engine creation or operation fails"""
+    pass
+
+class SessionError(GitHubRAGError):
+    """Raised when session management fails"""
+    pass
+
+def retry_on_error(max_retries=MAX_RETRIES, delay=RETRY_DELAY):
+    """Decorator for retrying operations on failure"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Attempt {attempt + 1} failed: {str(e)}. Retrying...")
+                        time.sleep(delay)
+            raise last_exception
+        return wrapper
+    return decorator
 
 def validate_github_url(url: str) -> bool:
     """Validate GitHub repository URL"""
-    return url.startswith(('https://github.com/', 'http://github.com/'))
+    if not url:
+        raise ValidationError("Repository URL cannot be empty")
+    if not url.startswith(('https://github.com/', 'http://github.com/')):
+        raise ValidationError("Invalid GitHub URL format. URL must start with 'https://github.com/' or 'http://github.com/'")
+    return True
 
 def get_repo_name(url: str) -> str:
     """Extract repository name from URL"""
     try:
-        return url.split('/')[-1].replace('.git', '')
+        parts = url.split('/')
+        if len(parts) < 5:
+            raise ValidationError("Invalid repository URL format")
+        repo_name = parts[-1].replace('.git', '')
+        if not repo_name:
+            raise ValidationError("Could not extract repository name from URL")
+        return repo_name
     except Exception as e:
-        raise GitHubRAGError(f"Invalid repository URL: {str(e)}")
+        raise ValidationError(f"Failed to extract repository name: {str(e)}")
+
+def cleanup_session():
+    """Clean up session resources"""
+    try:
+        if hasattr(st.session_state, 'file_cache'):
+            for key, value in st.session_state.file_cache.items():
+                try:
+                    del value
+                except Exception as e:
+                    logger.warning(f"Failed to cleanup cache entry {key}: {str(e)}")
+            st.session_state.file_cache.clear()
+        gc.collect()
+        logger.info("Session cleanup completed successfully")
+    except Exception as e:
+        logger.error(f"Error during session cleanup: {str(e)}")
+        raise SessionError(f"Failed to cleanup session: {str(e)}")
 
 def reset_chat():
     """Reset chat session and clean up resources"""
     try:
         st.session_state.messages = []
         st.session_state.context = None
-        gc.collect()
+        cleanup_session()
         logger.info("Chat session reset successfully")
     except Exception as e:
         logger.error(f"Error resetting chat: {str(e)}")
-        raise GitHubRAGError("Failed to reset chat session")
+        raise SessionError("Failed to reset chat session")
 
+@retry_on_error()
 def process_with_gitingets(github_url: str) -> tuple:
     """Process GitHub repository using gitingest"""
     try:
         summary, tree, content = ingest(github_url)
         if not all([summary, tree, content]):
-            raise GitHubRAGError("Failed to process repository: Missing data")
+            raise ProcessingError("Failed to process repository: Missing data")
         return summary, tree, content
     except Exception as e:
         logger.error(f"Error processing repository: {str(e)}")
-        raise GitHubRAGError(f"Failed to process repository: {str(e)}")
+        raise ProcessingError(f"Failed to process repository: {str(e)}")
 
 def create_query_engine(content_path: str, repo_name: str) -> Any:
     """Create and configure query engine"""
@@ -97,7 +165,7 @@ def create_query_engine(content_path: str, repo_name: str) -> Any:
         return query_engine
     except Exception as e:
         logger.error(f"Error creating query engine: {str(e)}")
-        raise GitHubRAGError(f"Failed to create query engine: {str(e)}")
+        raise QueryEngineError(f"Failed to create query engine: {str(e)}")
 
 # Initialize session state
 if "id" not in st.session_state:
@@ -147,7 +215,7 @@ with st.sidebar:
                             st.success("Repository loaded successfully! Ready to chat.")
                             logger.info(f"Successfully processed repository: {repo_name}")
                             
-                        except GitHubRAGError as e:
+                        except ProcessingError as e:
                             st.error(str(e))
                             logger.error(f"Error processing repository {repo_name}: {str(e)}")
                             st.stop()
@@ -198,7 +266,7 @@ if prompt := st.chat_input("What's up?"):
                 query_engine = st.session_state.file_cache.get(file_key)
                 
                 if query_engine is None:
-                    raise GitHubRAGError("Please load a repository first!")
+                    raise QueryEngineError("Please load a repository first!")
                 
                 response = query_engine.query(prompt)
                 
@@ -214,7 +282,7 @@ if prompt := st.chat_input("What's up?"):
                 message_placeholder.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-            except GitHubRAGError as e:
+            except QueryEngineError as e:
                 st.error(str(e))
                 logger.error(f"Error in chat processing: {str(e)}")
             except Exception as e:
