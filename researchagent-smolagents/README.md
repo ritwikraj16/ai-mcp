@@ -1,4 +1,4 @@
-# AI Reseach Agent
+# AI Research Agent
 A simple python application to demonstrate how agentic era is going to be. Used Smol Agents framework by hugging face.
 
 ## Demo Video
