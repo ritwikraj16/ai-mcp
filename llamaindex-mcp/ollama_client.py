@@ -71,7 +71,7 @@ async def main():
     agent = await get_agent(mcp_tool)
     agent_context = Context(agent)
     while True:
-        user_input = input("Enter your message: ")
+        user_input = input("Enter your message: (type exit to quit) ")
         if user_input == "exit":
             break
         print("User: ", user_input)
