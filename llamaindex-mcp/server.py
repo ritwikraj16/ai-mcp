@@ -1,5 +1,6 @@
-import sqlite3
 import argparse
+import sqlite3
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP('sqlite-demo')
@@ -19,34 +20,25 @@ def init_db():
     return conn, cursor
 
 @mcp.tool()
-def add_data(query: str) -> bool:
-    """Add new data to the people table using a SQL INSERT query.
+def add_data(name: str, age: int, profession: str) -> bool:
+    """Add new data to the people table.
 
     Args:
-        query (str): SQL INSERT query following this format:
-            INSERT INTO people (name, age, profession)
-            VALUES ('John Doe', 30, 'Engineer')
-        
-    Schema:
-        - name: Text field (required)
-        - age: Integer field (required)
-        - profession: Text field (required)
-        Note: 'id' field is auto-generated
-    
+        name (str): Name of the person.
+        age (int): Age of the person.
+        profession (str): Profession of the person.
     Returns:
-        bool: True if data was added successfully, False otherwise
-    
+        bool: True if data was added successfully, False otherwise.
     Example:
-        >>> query = '''
-        ... INSERT INTO people (name, age, profession)
-        ... VALUES ('Alice Smith', 25, 'Developer')
-        ... '''
-        >>> add_data(query)
+        >>> add_data('Roger Federer', 45, 'Professional Tennis Player')
         True
     """
     conn, cursor = init_db()
     try:
-        cursor.execute(query)
+        cursor.execute(
+            "INSERT INTO people (name, age, profession) VALUES (?, ?, ?)",
+            (name, age, profession)
+        )
         conn.commit()
         return True
     except sqlite3.Error as e:
@@ -56,8 +48,8 @@ def add_data(query: str) -> bool:
         conn.close()
 
 @mcp.tool()
-def read_data(query: str = "SELECT * FROM people") -> list:
-    """Read data from the people table using a SQL SELECT query.
+def read_data(query: str = "SELECT * FROM people") -> list[dict]:
+    """Read data from the people table using a SQL SELECT query and return as a list of dicts.
 
     Args:
         query (str, optional): SQL SELECT query. Defaults to "SELECT * FROM people".
@@ -67,29 +59,60 @@ def read_data(query: str = "SELECT * FROM people") -> list:
             - "SELECT * FROM people ORDER BY age DESC"
     
     Returns:
-        list: List of tuples containing the query results.
-              For default query, tuple format is (id, name, age, profession)
+        list: List of dictionaries containing the query results.
+              For default query, dict format is {"id": ..., "name": ..., "age": ..., "profession": ...}
     
     Example:
         >>> # Read all records
         >>> read_data()
-        [(1, 'John Doe', 30, 'Engineer'), (2, 'Alice Smith', 25, 'Developer')]
+        [
+            {"id": 1, "name": "John Doe", "age": 30, "profession": "Engineer"},
+            {"id": 2, "name": "Alice Smith", "age": 25, "profession": "Developer"}
+        ]
         
         >>> # Read with custom query
         >>> read_data("SELECT name, profession FROM people WHERE age < 30")
-        [('Alice Smith', 'Developer')]
+        [
+            {"name": "Alice Smith", "profession": "Developer"}
+        ]
     """
+    if not query or not query.strip():
+        query = "SELECT * FROM people"
     conn, cursor = init_db()
     try:
         cursor.execute(query)
-        return cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
+        result = [dict(zip(columns, row)) for row in rows]
+        return result
     except sqlite3.Error as e:
         print(f"Error reading data: {e}")
         return []
     finally:
         conn.close()
 
+@mcp.tool()
+def delete_person_by_name(name: str) -> bool:
+    """Delete a record from the people table by name if it exists.
 
+    Args:
+        name (str): The name of the person to delete.
+    Returns:
+        bool: True if a record was deleted, False otherwise.
+    Example:
+        >>> delete_person_by_name('John Doe')
+        True
+    """
+    conn, cursor = init_db()
+    try:
+        cursor.execute("DELETE FROM people WHERE name = ?", (name,))
+        conn.commit()
+        return cursor.rowcount > 0
+    except sqlite3.Error as e:
+        print(f"Error deleting data: {e}")
+        return False
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     # Start the server
@@ -127,4 +150,5 @@ if __name__ == "__main__":
 #     results = read_data()
 #     print("\nAll records:")
 #     for record in results:
+#         print(record)
 #         print(record)
