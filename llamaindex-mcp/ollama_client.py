@@ -28,7 +28,9 @@ async def list_tools():
 SYSTEM_PROMPT = """\
 You are an AI assistant for Tool Calling.
 
-Before you help a user, you need to work with tools to interact with Our Database
+Before you help a user, you need to work with tools to interact with Our Database.
+
+Always use the available tools to answer user questions. Do not make up information or answer from memory—only use the results returned by the tools.
 """
 
 # Step 5: Helper function: get_agent()
@@ -53,9 +55,11 @@ async def handle_user_message(
 ):
     handler = agent.run(message_content, ctx=agent_context)
     async for event in handler.stream_events():
-        if verbose and type(event) == ToolCall:
+        if verbose and isinstance(event, ToolCall):
             print(f"Calling tool {event.tool_name} with kwargs {event.tool_kwargs}")
-        elif verbose and type(event) == ToolCallResult:
+            # Print the actual tool call for LLM quality assessment
+            print(f"[MCP AGENT TOOL CALL] Tool: {event.tool_name}, Arguments: {event.tool_kwargs}")
+        elif verbose and isinstance(event, ToolCallResult):
             print(f"Tool {event.tool_name} returned {event.tool_output}")
     response = await handler
     return str(response)
