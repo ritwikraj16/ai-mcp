@@ -114,6 +114,47 @@ def delete_person_by_name(name: str) -> bool:
     finally:
         conn.close()
 
+@mcp.tool()
+def update_person(id: int, name: str = None, age: int = None, profession: str = None) -> bool:
+    """Update a person's record in the people table by id. You can update name, age, and/or profession.
+
+    Args:
+        id (int): The id of the person to update.
+        name (str, optional): The new name. Defaults to None (no change).
+        age (int, optional): The new age. Defaults to None (no change).
+        profession (str, optional): The new profession. Defaults to None (no change).
+    Returns:
+        bool: True if a record was updated, False otherwise.
+    Example:
+        >>> update_person(1, name='Rafael Nadal', age=41)
+        True
+    """
+    conn, cursor = init_db()
+    try:
+        fields = []
+        values = []
+        if name is not None:
+            fields.append("name = ?")
+            values.append(name)
+        if age is not None:
+            fields.append("age = ?")
+            values.append(age)
+        if profession is not None:
+            fields.append("profession = ?")
+            values.append(profession)
+        if not fields:
+            return False  # Nothing to update
+        values.append(id)
+        query = f"UPDATE people SET {', '.join(fields)} WHERE id = ?"
+        cursor.execute(query, tuple(values))
+        conn.commit()
+        return cursor.rowcount > 0
+    except sqlite3.Error as e:
+        print(f"Error updating data: {e}")
+        return False
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     # Start the server
     print("🚀Starting server... ")
