@@ -105,7 +105,8 @@ def delete_person_by_name(name: str) -> bool:
     """
     conn, cursor = init_db()
     try:
-        cursor.execute("DELETE FROM people WHERE name = ?", (name,))
+        # cursor.execute("DELETE FROM people WHERE name = ?", (name,))
+        cursor.execute("DELETE FROM people WHERE LOWER(name) = LOWER(?)", (name,))
         conn.commit()
         return cursor.rowcount > 0
     except sqlite3.Error as e:
@@ -192,4 +193,4 @@ if __name__ == "__main__":
 #     print("\nAll records:")
 #     for record in results:
 #         print(record)
-#         print(record)
+#         

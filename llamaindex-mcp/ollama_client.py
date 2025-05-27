@@ -1,7 +1,34 @@
+"""
+Architecture and Benefits of MCP Client & Agent Separation
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  MCP Client & Agent: Separation of Concerns                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ┌──────────────┐        Tool Calls        ┌──────────────┐                  ║
+║  │   Agent      │ ───────────────────────► │  MCP Client  │                  ║
+║  │ (LLM+Logic)  │                          │ (Tool Proxy) │                  ║
+║  └──────────────┘   ◄────────────────────  └──────────────┘                  ║
+║         ▲        Tool Results/Responses           ▲                          ║
+║         │                                         │                          ║
+║   User Input/Chat                          MCP Server/Tools                  ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ • The **Agent** (LLM+Logic) interprets user intent and decides which tools   ║
+║   to call, but does not know tool implementation details.                    ║
+║ • The **MCP Client** discovers, registers, and communicates with tools       ║
+║   exposed by the MCP server, abstracting away tool endpoints and protocols.  ║
+║ • This separation enables:                                                   ║
+║    - Maintainability: Add/update tools in MCP layer, not agent logic.        ║
+║    - Extensibility: Swap agent or tool backend independently.                ║
+║    - Security: Agent never has direct access to tool implementations.        ║
+║    - Transparency: All tool calls are logged for quality/debugging.          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
+
+
 import nest_asyncio
 from llama_index.core import Settings
-from llama_index.core.agent.workflow import (FunctionAgent, ToolCall,
-                                             ToolCallResult)
+from llama_index.core.agent.workflow import FunctionAgent, ToolCall, ToolCallResult
 from llama_index.core.workflow import Context
 from llama_index.llms.ollama import Ollama
 from llama_index.tools.mcp import BasicMCPClient, McpToolSpec
@@ -40,7 +67,6 @@ async def get_agent(tools: McpToolSpec):
         name="Agent",
         description="An agent that can work with Our Database software.",
         tools=tools,
-        #llm=OpenAI(model="gpt-4"),
         llm=Settings.llm,
         system_prompt=SYSTEM_PROMPT,
     )
@@ -66,12 +92,15 @@ async def handle_user_message(
 
 # Step 7: Initialize the MCP client and build the agent
 async def main():
-    mcp_client = BasicMCPClient("http://127.0.0.1:8000/sse")
-    mcp_tool = McpToolSpec(client=mcp_client)
+    #mcp_client = BasicMCPClient("http://127.0.0.1:8000/sse")
+    #mcp_tool = McpToolSpec(client=mcp_client)
+    mcp_tool = mcp_tools
     agent = await get_agent(mcp_tool)
     agent_context = Context(agent)
     while True:
-        user_input = input("Enter your message: (type exit to quit) ")
+        # user_input = input("Enter your message: (type exit to quit) ")
+        print("Enter your message (type 'exit' to quit):")
+        user_input = input("> ")
         if user_input == "exit":
             break
         print("User: ", user_input)
