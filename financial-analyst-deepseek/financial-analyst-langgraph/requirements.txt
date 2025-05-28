@@ -7,3 +7,4 @@ ipython
 python-dotenv
 yfinance
 matplotlib
+mcp
