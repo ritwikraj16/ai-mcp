@@ -24,9 +24,9 @@ Open the file and fill in your actual API keys:
 **Install Dependencies**
 
    Ensure you have Python 3.12 or later installed.
-
+```
    pip install -r requirements.txt
-
+```
 
 ---
 
