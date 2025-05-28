@@ -1,4 +1,4 @@
-# MCP-powered Financial Analyst using Langgraph and Azure openai
+# MCP-powered Financial Analyst using Langgraph and Azure openai GPT4o
 
 This project implements a financial analysis agentic workflow that analyzes stock market data and provides insights.
 
@@ -18,7 +18,7 @@ A `.env` file is already included in the project.
 Open the file and fill in your actual API keys:
 
 ```env
-# .env file
+.env 
 
 ```
 **Install Dependencies**
