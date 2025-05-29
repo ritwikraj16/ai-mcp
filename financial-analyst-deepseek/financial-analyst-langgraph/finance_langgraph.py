@@ -95,7 +95,7 @@ workflow = graph.compile()
 # Function to be wrapped inside MCP tool
 def run_financial_analysis(query):
     result = workflow.invoke({"query": query})
-    result["generated_code"].content
+    
     return result["generated_code"].content
 
 if __name__ == "__main__":
