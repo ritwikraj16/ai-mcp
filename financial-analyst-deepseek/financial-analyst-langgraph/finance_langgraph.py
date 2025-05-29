@@ -69,7 +69,7 @@ def code_writer_node(state: StockAnalysisState):
 
 def code_result(state: StockAnalysisState):
    
-    ans=StockAnalysisState["generated_code"]
+    ans = state["generated_code"]
     return {"execution_result": ans}
 
 
