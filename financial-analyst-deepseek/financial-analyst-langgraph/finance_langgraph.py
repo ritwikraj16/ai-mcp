@@ -68,9 +68,15 @@ def code_writer_node(state: StockAnalysisState):
 
 
 def code_result(state: StockAnalysisState):
-   
-    ans = state["generated_code"]
-    return {"execution_result": ans}
+    
+    generated_code = state["generated_code"]
+    try:
+        # Execute the generated code in a controlled environment
+        exec_globals = {}
+        exec(generated_code.content, exec_globals)
+        return {"execution_result": "Code executed successfully"}
+    except Exception as e:
+        return {"execution_result": f"Execution failed: {str(e)}"}
 
 
 graph = StateGraph(StockAnalysisState)
