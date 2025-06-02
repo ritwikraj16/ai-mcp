@@ -224,9 +224,9 @@ PARAMETERS = {
     - The JSON file can be placed into the container filesystem via [cat+EOF-pasting](https://stackoverflow.com/a/21549836) or via mounting it on container launch
       ```sh
       docker run -it \
-  -v /Users/my.name/Downloads/downloaded_creds.json:/mindsdb/mindsdb/integrations/handlers/gmail_handler/client_secret.json \
-  -p 47334:47334 -p 47335:47335 \
-  mindsdb/mindsdb
+      -v /Users/my.name/Downloads/downloaded_creds.json:/mindsdb/mindsdb/integrations/handlers/gmail_handler/client_secret.json \
+      -p 47334:47334 -p 47335:47335 \
+      mindsdb/mindsdb
       ```
 
 5. Add user authentication:
