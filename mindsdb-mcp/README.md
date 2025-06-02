@@ -242,8 +242,10 @@ Go to the MindsDB editor running locally at `127.0.0.1:47334` and run the follow
 CREATE DATABASE mindsdb_gmail
 WITH ENGINE = 'gmail',
 PARAMETERS = {
-  "credentials_file": "/mindsdb/mindsdb/integrations/handlers/gmail_handler/client_secret.json"
+PARAMETERS = {
+  "credentials_file": "/mindsdb/mindsdb/integrations/handlers/gmail_handler/client_secret.json",
   "scopes": ['https://.../gmail.compose', 'https://.../gmail.readonly']
+};
 };
 ```
 
