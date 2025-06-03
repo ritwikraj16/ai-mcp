@@ -242,14 +242,14 @@ Go to the MindsDB editor running locally at `127.0.0.1:47334` and run the follow
 CREATE DATABASE mindsdb_gmail
 WITH ENGINE = 'gmail',
 PARAMETERS = {
-PARAMETERS = {
   "credentials_file": "/mindsdb/mindsdb/integrations/handlers/gmail_handler/client_secret.json",
   "scopes": ['https://.../gmail.compose', 'https://.../gmail.readonly']
-};
 };
 ```
 
 When prompted, sign in with the Google account you added to the `Test users` in your app and you are good to go.
+Note that in some cases, scoped will need to be set to `"scopes": ['https://www.googleapis.com/auth/gmail.readonly',
+'https://www.googleapis.com/auth/gmail.compose']` or can be entirely ommitted.
 
 ### 🐙 GitHub
 
