@@ -215,7 +215,7 @@ with st.sidebar:
 # ===========================
 #   Main Chat Interface
 # ===========================
-st.title("🎬 Video RAG with Gemini")
+st.title("✅ Deployed: Video RAG with Gemini")
 st.markdown("Upload a video and chat with it using Google's Gemini AI!")
 
 # Check if ready to chat
