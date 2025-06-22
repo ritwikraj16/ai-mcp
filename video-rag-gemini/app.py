@@ -117,27 +117,25 @@ if "video_name" not in st.session_state:
     st.session_state.video_name = None
 
 # ===========================
+#   API Key Configuration
+# ===========================
+api_key = os.getenv("GEMINI_API_KEY")
+
+if api_key:
+    if st.session_state.video_processor is None:
+        try:
+            st.session_state.video_processor = VideoProcessor(api_key)
+        except Exception as e:
+            st.error(f"Failed to initialize video processor: {e}")
+            api_key = None # Invalidate API key on failure
+else:
+    # This message is for the developer/hoster, not the end-user.
+    st.error("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.")
+
+# ===========================
 #   Sidebar Configuration
 # ===========================
 with st.sidebar:
-    st.header("🔑 API Configuration")
-    
-    # Try to get API key from environment first
-    default_api_key = os.getenv("GEMINI_API_KEY", "")
-    
-    api_key = st.text_input(
-        "Gemini API Key", 
-        value=default_api_key,
-        type="password",
-        help="Get your API key from https://aistudio.google.com/app/apikey"
-    )
-    
-    if api_key:
-        if st.session_state.video_processor is None:
-            st.session_state.video_processor = VideoProcessor(api_key)
-    
-    st.markdown("---")
-    
     st.header("📹 Upload Video")
     uploaded_file = st.file_uploader(
         "Choose a video file", 
@@ -160,7 +158,7 @@ with st.sidebar:
                 st.session_state.video_name != uploaded_file.name):
                 
                 if st.session_state.video_processor is None:
-                    st.error("Please enter your Gemini API key first.")
+                    st.error("API key not configured. Cannot process video.")
                 else:
                     with st.spinner("Uploading and processing video... This may take a few minutes."):
                         # Save uploaded file temporarily
@@ -220,7 +218,7 @@ st.markdown("Upload a video and chat with it using Google's Gemini AI!")
 
 # Check if ready to chat
 if not api_key:
-    st.info("👈 Please enter your Gemini API key in the sidebar to get started.")
+    st.info("👈 The application is not configured with an API key. Please contact the administrator.")
 elif st.session_state.video_file is None:
     st.info("👈 Please upload a video file in the sidebar to start chatting.")
 else:
