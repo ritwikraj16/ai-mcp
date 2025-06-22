@@ -17,10 +17,13 @@ A Streamlit demo that allows you to upload videos and chat with them using Googl
    pip install -r requirements.txt
    ```
 
-2. **Get Gemini API Key**
-   - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
-   - Create a new API key
-   - Keep it secure - you'll enter it in the app
+2. **Set Up Environment Variables**
+   - Create a file named `.env` in the project's root directory.
+   - Add your Gemini API key to the `.env` file as follows:
+     ```
+     GEMINI_API_KEY='your_gemini_api_key_here'
+     ```
+   - You can get a Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 3. **Run the Application**
    ```bash
@@ -29,10 +32,9 @@ A Streamlit demo that allows you to upload videos and chat with them using Googl
 
 ## Usage
 
-1. **Enter API Key**: Input your Gemini API key in the sidebar
-2. **Upload Video**: Choose a video file (supported formats listed above)
-3. **Wait for Processing**: The video will be uploaded and processed by Gemini
-4. **Start Chatting**: Ask questions about your video content!
+1. **Upload Video**: Choose a video file (supported formats listed above).
+2. **Wait for Processing**: The video will be uploaded and processed by Gemini.
+3. **Start Chatting**: Ask questions about your video content!
 
 ## Example Questions
 

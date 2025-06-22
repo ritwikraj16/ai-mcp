@@ -17,28 +17,20 @@ pip install -r requirements.txt
 python test_setup.py
 ```
 
-### 2. Get Gemini API Key
+### 2. Set Up Your API Key
 
-1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy your API key
+1.  **Get a Gemini API Key**:
+    *   Visit [Google AI Studio](https://aistudio.google.com/app/apikey) and create a new API key.
 
-### 3. Configure API Key
+2.  **Set the Environment Variable**:
+    *   Create a file named `.env` in the project's root directory.
+    *   Add your Gemini API key to this file:
+        ```
+        GEMINI_API_KEY='your_gemini_api_key_here'
+        ```
+    *   **Important**: The application reads the key from this file. Your friends or end-users will not need to enter a key.
 
-**Option A: Environment Variable (Recommended)**
-```bash
-# Create .env file
-cp .env.example .env
-
-# Edit .env file and add your API key
-GEMINI_API_KEY=your_actual_api_key_here
-```
-
-**Option B: Enter in App**
-- You can also enter the API key directly in the Streamlit sidebar
-
-### 4. Run the Application
+### 3. Run the Application
 
 ```bash
 streamlit run app.py
@@ -48,17 +40,13 @@ The app will open in your browser at `http://localhost:8501`
 
 ## Using the App
 
-### Step 1: Enter API Key
-- If you haven't set up the environment variable, enter your Gemini API key in the sidebar
-- The key is masked for security
-
-### Step 2: Upload Video
+### Step 1: Upload Video
 - Click "Choose a video file" in the sidebar
 - Supported formats: MP4, AVI, MOV, MKV, WEBM
 - File size limit: ~100MB (larger files may fail)
 - Wait for the video to be processed (this can take several minutes)
 
-### Step 3: Start Chatting
+### Step 2: Start Chatting
 - Once processing is complete, you'll see example questions
 - Click on example questions or type your own
 - Ask anything about the video content!
